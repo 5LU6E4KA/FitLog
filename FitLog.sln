@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34601.278
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FitLog", "FitLog.csproj", "{9E568447-9EBB-4AFC-A3A8-E4AC9218F97C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9E568447-9EBB-4AFC-A3A8-E4AC9218F97C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E568447-9EBB-4AFC-A3A8-E4AC9218F97C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E568447-9EBB-4AFC-A3A8-E4AC9218F97C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E568447-9EBB-4AFC-A3A8-E4AC9218F97C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6F78C7A3-937B-474D-9F1F-F72BF916D826}
+	EndGlobalSection
+EndGlobal

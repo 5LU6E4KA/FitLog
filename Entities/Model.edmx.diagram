@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="5182a566755542d3a6cfd5fdbd9479bd" Name="Diagram1">
+        <EntityTypeShape EntityType="FitLogModel.Glucoses" Width="1.5" PointX="3" PointY="1.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="FitLogModel.Liquids" Width="1.5" PointX="3" PointY="4.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="FitLogModel.Meals" Width="1.5" PointX="3" PointY="7.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="FitLogModel.Pulses" Width="1.5" PointX="3" PointY="10.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="FitLogModel.Sleeps" Width="1.5" PointX="3" PointY="13.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="FitLogModel.Temperatures" Width="1.5" PointX="3" PointY="16.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="FitLogModel.Users" Width="1.5" PointX="0.75" PointY="9.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="FitLogModel.Weights" Width="1.5" PointX="3" PointY="18.875" IsExpanded="true" />
+        <AssociationConnector Association="FitLogModel.FK__Glucoses__UserID__4AB81AF0" ManuallyRouted="false" />
+        <AssociationConnector Association="FitLogModel.FK__Liquids__UserID__48CFD27E" ManuallyRouted="false" />
+        <AssociationConnector Association="FitLogModel.FK__Meals__UserID__47DBAE45" ManuallyRouted="false" />
+        <AssociationConnector Association="FitLogModel.FK__Pulses__UserID__49C3F6B7" ManuallyRouted="false" />
+        <AssociationConnector Association="FitLogModel.FK__Sleeps__UserID__4BAC3F29" ManuallyRouted="false" />
+        <AssociationConnector Association="FitLogModel.FK__Temperatu__UserI__4CA06362" ManuallyRouted="false" />
+        <AssociationConnector Association="FitLogModel.FK__Weights__UserID__4D94879B" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
