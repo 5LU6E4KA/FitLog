@@ -5,5 +5,12 @@
         <ResourceDictionary Source="/Images/LoginIcon.xaml" />
         <ResourceDictionary Source="/Images/PasswordIcon.xaml" />
         <ResourceDictionary Source="/Images/ExitIcon.xaml" />
+        <ResourceDictionary Source="/Images/Minimize.xaml" />
+        <ResourceDictionary Source="/Images/Expand.xaml" />
+        <ResourceDictionary Source="/Images/Close.xaml" />
+        <ResourceDictionary Source="/Images/CollapseToWindow.xaml" />
+        <ResourceDictionary Source="/Images/AttentionMessage.xaml" />
+        <ResourceDictionary Source="/Images/ErrorMessage.xaml" />
+        <ResourceDictionary Source="/Images/InformationMessage.xaml" />
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

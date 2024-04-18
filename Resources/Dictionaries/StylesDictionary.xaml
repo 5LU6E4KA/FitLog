@@ -1,8 +1,10 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="/Resources/StyleUIElements/Dictionary1.xaml" />
-
+        <ResourceDictionary Source="/Resources/StyleUIElements/TextBoxStyle.xaml" />
+        <ResourceDictionary Source="/Resources/StyleUIElements/TextBlockStyle.xaml" />
+        <ResourceDictionary Source="/Resources/StyleUIElements/ButtonStyle.xaml" />
+        <ResourceDictionary Source="/Resources/StyleUIElements/WindowStyle.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

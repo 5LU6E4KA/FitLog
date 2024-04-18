@@ -119,9 +119,12 @@
                     Style="{StaticResource mainButton}" />
 
                 <Button
+                    Margin="0,20"
+                    VerticalAlignment="Center"
                     Click="TransitionToAuthorizationWindow"
                     Content="Авторизация"
-                    Style="{StaticResource mainButton}" />
+                    Style="{StaticResource LinkButton}" />
+
             </StackPanel>
         </Border>
 

@@ -1,4 +1,5 @@
-﻿using FitLog.Entities;
+﻿using FitLog.Controls;
+using FitLog.Entities;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Validation;
@@ -13,6 +14,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using static FitLog.Controls.CustomMessageBox;
 
 namespace FitLog.Windows
 {
@@ -88,7 +90,7 @@ namespace FitLog.Windows
         {
             if (new[] { login, password }.Any(x => String.IsNullOrWhiteSpace(x)))
             {
-                MessageBox.Show("Проверьте заполненность полей!", "Ошибка регистрации", MessageBoxButton.OK, MessageBoxImage.Information);
+               CustomMessageBox.Show("Проверьте заполненность полей!", "Регистрация", MessageWindowImage.Information, MessageWindowButton.Ok);
                 return null;
             }
 
