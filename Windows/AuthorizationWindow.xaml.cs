@@ -1,4 +1,5 @@
-﻿using FitLog.Entities;
+﻿using FitLog.Controls;
+using FitLog.Entities;
 using FitLog.HashingData;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using static FitLog.Controls.CustomMessageBox;
 
 namespace FitLog.Windows
 {
@@ -79,7 +81,7 @@ namespace FitLog.Windows
         {
             if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(password))
             {
-                MessageBox.Show("Проверьте заполненность полей!", "Ошибка авторизации", MessageBoxButton.OK, MessageBoxImage.Information);
+                CustomMessageBox.Show("Проверьте заполненность полей!", "Авторизация", MessageWindowImage.Error, MessageWindowButton.Ok);
                 return null;
             }
 
@@ -87,18 +89,18 @@ namespace FitLog.Windows
 
             if (user == null)
             {
-                MessageBox.Show("Пользователь не найден, Вам нужно пройти регистрацию", "Ошибка авторизации", MessageBoxButton.OK, MessageBoxImage.Information);
+                CustomMessageBox.Show("Пользователь не найден, Вам нужно пройти регистрацию", "Авторизация", MessageWindowImage.Information, MessageWindowButton.Ok);
                 return null;
             }
 
             if (HashingPassword.VerifyPassword(password, user.Password))
             {
-                MessageBox.Show("Авторизация прошла успешно!");
+                CustomMessageBox.Show("Авторизация прошла успешно!","Авторизация", MessageWindowImage.Information, MessageWindowButton.Ok);
                 return user;
             }
             else
             {
-                MessageBox.Show("Неправильный пароль!", "Ошибка авторизации", MessageBoxButton.OK, MessageBoxImage.Information);
+                CustomMessageBox.Show("Неправильный пароль!", "Авторизация", MessageWindowImage.Error, MessageWindowButton.Ok);
                 return null;
             }
         }
@@ -109,6 +111,16 @@ namespace FitLog.Windows
             if (registrationResult != null)
             {
                 NavigationToMainMenu(registrationResult);
+            }
+        }
+
+        private void ButtonClose_Click(object sender, RoutedEventArgs e)
+        {
+            var result = CustomMessageBox.Show("Вы точно хотите выйти из приложения?", "Выход", MessageWindowImage.Information, MessageWindowButton.OkCancel);
+
+            if (result == MessageWindowResult.Ok)
+            {
+                Application.Current.Shutdown();
             }
         }
     }

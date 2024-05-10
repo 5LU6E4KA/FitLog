@@ -90,24 +90,24 @@ namespace FitLog.Windows
         {
             if (new[] { login, password }.Any(x => String.IsNullOrWhiteSpace(x)))
             {
-               CustomMessageBox.Show("Проверьте заполненность полей!", "Регистрация", MessageWindowImage.Information, MessageWindowButton.Ok);
+               CustomMessageBox.Show("Проверьте заполненность полей!", "Регистрация", MessageWindowImage.Error, MessageWindowButton.Ok);
                 return null;
             }
 
             if (password.Length < 8 || password.Length > 20)
             {
-                MessageBox.Show("Минимальная длина пароля - 8 символов, а максимальная длина - 20 символов", "Ошибка регистрации", MessageBoxButton.OK, MessageBoxImage.Information);
+                CustomMessageBox.Show("Минимальная длина пароля - 8 символов, а максимальная длина - 20 символов", "Регистрация", MessageWindowImage.Information, MessageWindowButton.Ok);
                 return null;
             }
 
             if (UserExists(login))
             {
-                MessageBox.Show("Пользователь с таким логином уже существует", "Ошибка регистрации", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show("Пользователь с таким логином уже существует", "Регистрация", MessageWindowImage.Error, MessageWindowButton.Ok);
                 return null;
             }
             var user = new Users { Login = login, Password = HashingData.HashingPassword.HashPassword(password) };
             RegisterUser(user);
-            MessageBox.Show("Вы успешно зарегистрировались", "Регистрация", MessageBoxButton.OK, MessageBoxImage.Information);
+            CustomMessageBox.Show("Вы успешно зарегистрировались", "Регистрация", MessageWindowImage.Information, MessageWindowButton.Ok);
 
             return user;
 
@@ -133,8 +133,19 @@ namespace FitLog.Windows
 
                 var fullErrorMessage = string.Join("; ", errorMessages);
 
-                MessageBox.Show($"Ошибка при валидации: {fullErrorMessage}");
+                CustomMessageBox.ShowMessage($"Ошибка при валидации: {fullErrorMessage}");
             }
         }
+
+        private void ButtonClose_Click(object sender, RoutedEventArgs e)
+        {
+            var result = CustomMessageBox.Show("Вы точно хотите выйти из приложения?", "Выход", MessageWindowImage.Information, MessageWindowButton.OkCancel);
+
+            if (result == MessageWindowResult.Ok)
+            {
+                Application.Current.Shutdown();
+            }
+        }
+
     }
 }

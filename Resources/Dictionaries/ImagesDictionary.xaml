@@ -12,5 +12,16 @@
         <ResourceDictionary Source="/Images/AttentionMessage.xaml" />
         <ResourceDictionary Source="/Images/ErrorMessage.xaml" />
         <ResourceDictionary Source="/Images/InformationMessage.xaml" />
+
+        <ResourceDictionary Source="/Images/MenuIcons/FoodIcon.xaml" />
+        <ResourceDictionary Source="/Images/MenuIcons/ProfileIcon.xaml" />
+        <ResourceDictionary Source="/Images/MenuIcons/OutIcon.xaml" />
+        <ResourceDictionary Source="/Images/MenuIcons/WeightIcon.xaml" />
+        <ResourceDictionary Source="/Images/MenuIcons/TemperatureIcon.xaml" />
+        <ResourceDictionary Source="/Images/MenuIcons/SleepIcon.xaml" />
+        <ResourceDictionary Source="/Images/MenuIcons/GlucoseIcon.xaml" />
+        <ResourceDictionary Source="/Images/MenuIcons/PulseIcon.xaml" />
+        <ResourceDictionary Source="/Images/MenuIcons/LiquidIcon.xaml" />
+
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

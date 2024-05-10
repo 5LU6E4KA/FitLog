@@ -5,6 +5,7 @@
         <ResourceDictionary Source="/Resources/StyleUIElements/TextBlockStyle.xaml" />
         <ResourceDictionary Source="/Resources/StyleUIElements/ButtonStyle.xaml" />
         <ResourceDictionary Source="/Resources/StyleUIElements/WindowStyle.xaml" />
+        <ResourceDictionary Source="/Resources/StyleUIElements/Dictionary1.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

@@ -138,6 +138,26 @@
         </Style.Triggers>
     </Style>
 
+    <Style x:Key="LinkButtonrecomendation" TargetType="Button">
+
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <TextBlock TextDecorations="Underline">
+                        <ContentPresenter />
+                    </TextBlock>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Foreground" Value="#ACB0AF" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="true">
+                <Setter Property="Foreground" Value="#202451" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <Style x:Key="WindowButton" TargetType="{x:Type Button}">
         <Style.Setters>
             <Setter Property="Template">
@@ -238,7 +258,7 @@
 
     <Style x:Key="MessageWindowButton" TargetType="{x:Type Button}">
         <Style.Setters>
-            <Setter Property="Background" Value="Purple" />
+            <Setter Property="Background" Value="#523796" />
             <Setter Property="Foreground" Value="White" />
             <Setter Property="Template">
                 <Setter.Value>
@@ -246,7 +266,7 @@
                         <Border
                             x:Name="MainContent"
                             Background="{TemplateBinding Background}"
-                            BorderBrush="Purple"
+                            BorderBrush="#523796"
                             BorderThickness="0"
                             CornerRadius="8"
                             SnapsToDevicePixels="True">

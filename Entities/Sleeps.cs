@@ -19,6 +19,7 @@ namespace FitLog.Entities
         public System.DateTime BedTime { get; set; }
         public System.DateTime WakeUpTime { get; set; }
         public Nullable<System.DateTime> SleepTime { get; set; }
+        public Nullable<int> HoursOfSleep { get; set; }
     
         public virtual Users Users { get; set; }
     }

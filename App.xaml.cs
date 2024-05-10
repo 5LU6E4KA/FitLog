@@ -13,5 +13,10 @@ namespace FitLog
     /// </summary>
     public partial class App : Application
     {
+        public App()
+        {
+            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NBaF5cXmZCe0x1RXxbf1x0ZFRMY15bRHZPIiBoS35RckVnWn9fc3dXRmFYVUBx");
+
+        }
     }
 }
