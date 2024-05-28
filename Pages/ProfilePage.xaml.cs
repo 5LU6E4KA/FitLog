@@ -434,6 +434,13 @@ namespace FitLog.Pages
                 return;
             }
 
+            string emailPattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+            if (!Regex.IsMatch(recipient, emailPattern))
+            {
+                CustomMessageBox.Show("Введите корректный адрес электронной почты!", "Внимание", MessageWindowImage.Warning, MessageWindowButton.Ok);
+                return;
+            }
+
             if (SelectedFiles.Count == 0)
             {
                 CustomMessageBox.Show("Выберите хотя бы один файл!", "Внимание", MessageWindowImage.Warning, MessageWindowButton.Ok);
@@ -477,6 +484,7 @@ namespace FitLog.Pages
                 CustomMessageBox.Show($"Ошибка при отправке почты: {ex.Message}", "Ошибка", MessageWindowImage.Error, MessageWindowButton.Ok);
             }
         }
+
 
 
         private void OpenGithub(object sender, RoutedEventArgs e)
