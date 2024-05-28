@@ -1,14 +1,20 @@
-﻿using FitLog.Entities;
+﻿using FitLog.ClearFields;
+using FitLog.Controls;
+using FitLog.Entities;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using Syncfusion.DocIO.DLS;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using static FitLog.Controls.CustomMessageBox;
 using static FitLog.Notifications.MyNotify;
 
 namespace FitLog.Pages
@@ -66,7 +72,7 @@ namespace FitLog.Pages
         {
             ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
             string downloadsPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads";
-            string fileName = $"WeightOutput_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.xlsx"; // Добавляем временный штамп к имени файла
+            string fileName = $"WeightOutput_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.xlsx"; 
             string filePath = System.IO.Path.Combine(downloadsPath, fileName);
 
             FileInfo fileInfo = new FileInfo(filePath);
@@ -75,13 +81,13 @@ namespace FitLog.Pages
             {
                 ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("WeightData");
 
-                // Добавляем заголовки
+                
                 worksheet.Cells[1, 1].Value = "Момент занесения";
                 worksheet.Cells[1, 2].Value = "Вес (кг)";
 
-                if (weights.Any()) // Проверяем, есть ли данные
+                if (weights.Any()) 
                 {
-                    // Добавляем данные
+                    
                     int row = 2;
                     foreach (var perem in weights)
                     {
@@ -91,12 +97,12 @@ namespace FitLog.Pages
                         row++;
                     }
 
-                    // Устанавливаем формат для времени
+                    
                     worksheet.Column(1).Style.Numberformat.Format = "hh:mm:ss dd-mm-yyyy";
                     worksheet.Cells[1, 1, 1, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                     worksheet.Cells[1, 1, 1, 2].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 
-                    // Устанавливаем выравнивание для данных
+                    
                     worksheet.Cells[2, 1, row - 1, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                     worksheet.Cells[2, 1, row - 1, 1].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                     worksheet.Cells[2, 3, row - 1, 4].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
@@ -104,13 +110,48 @@ namespace FitLog.Pages
 
                 }
 
-                // Автоподбор ширины столбцов
+                
                 worksheet.Cells.AutoFitColumns();
 
-                // Сохраняем изменения
+                
                 package.Save();
             }
-            MessageBox.Show($"Файл сохранен в папке \"Загрузки\": {filePath}", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+            CustomMessageBox.Show($"Файл сохранен в папке \"Загрузки\": {filePath}", "Успех", MessageWindowImage.Information, MessageWindowButton.Ok);
+        }
+
+        private void NumericAndCommaTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            string currentText = textBox.Text;
+            string newText = currentText.Insert(textBox.CaretIndex, e.Text);
+
+            // Разрешить только цифры и запятую
+            if (!char.IsDigit(e.Text, 0) && e.Text != ",")
+            {
+                e.Handled = true;
+                return;
+            }
+
+            // Запрет на ввод запятой первым символом
+            if (newText.StartsWith(","))
+            {
+                e.Handled = true;
+                return;
+            }
+
+            // Запрет на ввод запятой последним символом
+            if (newText.EndsWith(",") && newText.Count(c => c == ',') > 1)
+            {
+                e.Handled = true;
+                return;
+            }
+
+            // Запрет на ввод второй запятой
+            if (newText.Count(c => c == ',') > 1)
+            {
+                e.Handled = true;
+                return;
+            }
         }
 
         private void ButtonExportToExcelWeight_Click(object sender, RoutedEventArgs e)
@@ -130,15 +171,15 @@ namespace FitLog.Pages
 
                     });
                 }
-
+                weights = weights.OrderBy(l => l.MeasurementTimeWeight).ToList();
                 ExportToExcelWeight(weights);
             }
             else if (PeriodComboBox.SelectedValue.ToString() == "Неделя")
             {
-                // Начальная дата - 6 дней назад от текущего дня
+                
                 var startDate = DateTime.Now.Date.AddDays(-6);
 
-                // Конечная дата - текущий момент
+                
                 var endDate = DateTime.Now;
 
                 var info = DatabaseContext.DbContext.Context.Weights.ToList()
@@ -154,7 +195,7 @@ namespace FitLog.Pages
 
                     });
                 }
-
+                weights = weights.OrderBy(l => l.MeasurementTimeWeight).ToList();
                 ExportToExcelWeight(weights);
             }
 
@@ -162,29 +203,29 @@ namespace FitLog.Pages
 
         public static void ExportToWordWeight(List<Weights> weights)
         {
-            // Создаем новый документ Word
+            
             using (WordDocument document = new WordDocument())
             {
-                // Добавляем раздел с заголовком
+                
                 WSection section = document.AddSection() as WSection;
                 WParagraph paragraph = section.HeadersFooters.Header.AddParagraph() as WParagraph;
                 paragraph.AppendText("Weight Data").CharacterFormat.FontSize = 14;
                 paragraph.ParagraphFormat.HorizontalAlignment = Syncfusion.DocIO.DLS.HorizontalAlignment.Center;
 
-                // Добавляем таблицу
+                
                 WTable table = section.AddTable() as WTable;
-                table.ResetCells(weights.Count + 1, 2); // +1 для заголовков
+                table.ResetCells(weights.Count + 1, 2); 
 
-                // Добавляем заголовки таблицы
+                
                 string[] headers = { "Момент занесения", "Температура" };
                 for (int i = 0; i < headers.Length; i++)
                 {
                     table[0, i].AddParagraph().AppendText(headers[i]);
                     table[0, i].CellFormat.VerticalAlignment = Syncfusion.DocIO.DLS.VerticalAlignment.Middle;
-                    //table[0, i].CellFormat.HorizontalAlignment = Syncfusion.DocIO.DLS.HorizontalAlignment.Center;
+                    
                 }
 
-                // Добавляем данные в таблицу
+                
                 for (int i = 0; i < weights.Count; i++)
                 {
                     Weights weight = weights[i];
@@ -192,7 +233,7 @@ namespace FitLog.Pages
                     table[i + 1, 1].AddParagraph().AppendText(weight.BodyWeight.ToString());
                 }
 
-                // Устанавливаем форматирование для таблицы
+                
                 foreach (WTableRow row in table.Rows)
                 {
                     foreach (WTableCell cell in row.Cells)
@@ -204,13 +245,13 @@ namespace FitLog.Pages
                     }
                 }
 
-                // Сохраняем документ
+               
                 string downloadsPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads";
                 string fileName = $"WeightOutput_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.docx";
                 string filePath = System.IO.Path.Combine(downloadsPath, fileName);
                 document.Save(filePath);
 
-                MessageBox.Show($"Файл сохранен в папке \"Загрузки\": {filePath}", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                CustomMessageBox.Show($"Файл сохранен в папке \"Загрузки\": {filePath}", "Успех", MessageWindowImage.Information, MessageWindowButton.Ok);
             }
         }
 
@@ -231,15 +272,15 @@ namespace FitLog.Pages
 
                     });
                 }
-
+                weights = weights.OrderBy(l => l.MeasurementTimeWeight).ToList();
                 ExportToWordWeight(weights);
             }
             else if (PeriodComboBox.SelectedValue.ToString() == "Неделя")
             {
-                // Начальная дата - 6 дней назад от текущего дня
+                
                 var startDate = DateTime.Now.Date.AddDays(-6);
 
-                // Конечная дата - текущий момент
+                
                 var endDate = DateTime.Now;
 
                 var info = DatabaseContext.DbContext.Context.Weights.ToList()
@@ -255,60 +296,65 @@ namespace FitLog.Pages
 
                     });
                 }
-
+                weights = weights.OrderBy(l => l.MeasurementTimeWeight).ToList();
                 ExportToWordWeight(weights);
             }
 
         }
 
-
         public void SaveWeight()
         {
             var weightGoal = _currentUser.WeightGoal;
             DateTime today = DateTime.Today;
-            DateTime currentTime = DateTime.Now;
 
-            if (Convert.ToDecimal(WeightTextBox.Text) > 650 || Convert.ToDecimal(WeightTextBox.Text) < 10)
+            DateTime? newWeightTime = WeightTimePicker.Value;
+            decimal weightConsumed;
+
+            if (!decimal.TryParse(WeightTextBox.Text, out weightConsumed))
             {
-                MessageBox.Show("Человек не может иметь такой вес");
+                CustomMessageBox.Show("Некорректное значение для веса", "Внимание", MessageWindowImage.Warning, MessageWindowButton.Ok);
                 return;
             }
 
-            var newWeightTime = WeightTimePicker.Value;
-            if (newWeightTime.Value.Date > today || (newWeightTime.Value.Date == today && newWeightTime.Value.TimeOfDay > currentTime.TimeOfDay))
+            if (newWeightTime == null)
             {
-                MessageBox.Show("Вы не можете добавить вес для будущей даты и времени");
-                return; // Прерываем выполнение метода, если дата или время не настоящие
+                CustomMessageBox.Show("Пожалуйста, заполните временной интервал", "Внимание", MessageWindowImage.Warning, MessageWindowButton.Ok);
+                return;
+            }
+
+            if (weightConsumed > 650 || weightConsumed < 10)
+            {
+                CustomMessageBox.Show("Человек не может иметь такой вес", "Внимание", MessageWindowImage.Warning, MessageWindowButton.Ok);
+                return;
+            }
+
+            if (newWeightTime.Value.Date > today)
+            {
+                CustomMessageBox.Show("Нельзя вводить данные на будущие даты", "Внимание", MessageWindowImage.Warning, MessageWindowButton.Ok);
+                return;
             }
 
             DatabaseContext.DbContext.Context.Weights.Add(new Weights
             {
                 UserID = _currentUser.ID,
-                BodyWeight = Convert.ToDecimal(WeightTextBox.Text),
-                MeasurementTimeWeight = newWeightTime,
+                BodyWeight = weightConsumed,
+                MeasurementTimeWeight = newWeightTime.Value,
             });
 
             DatabaseContext.DbContext.Context.SaveChanges();
 
-            var weightsForToday = DatabaseContext.DbContext.Context.Weights
-                .Where(m => m.UserID == _currentUser.ID &&
-                             DbFunctions.TruncateTime(m.MeasurementTimeWeight) == today)
-                .OrderByDescending(m => m.MeasurementTimeWeight)
-                .ToList();
+            WeightTimePicker.Text = "";
+            ClearField.ClearTextBoxes(this);
 
-            var latestWeightForToday = weightsForToday.FirstOrDefault();
-
-            if (latestWeightForToday != null && latestWeightForToday.MeasurementTimeWeight == newWeightTime)
+            if (newWeightTime.Value.Date == today)
             {
-                if (latestWeightForToday.BodyWeight == weightGoal)
+                if (weightConsumed == weightGoal)
                 {
                     ShowNotification("Вес", "Вы достигли своей цели по весу за сегодня!");
-                    // Здесь можно выполнить дополнительные действия в случае достижения цели
                 }
-                else if (latestWeightForToday.BodyWeight > weightGoal)
+                else if (weightConsumed > weightGoal)
                 {
                     ShowNotification("Вес", "Вы превысили свою цель по весу за сегодня!");
-                    // Здесь можно выполнить дополнительные действия в случае превышения цели
                 }
                 else
                 {
@@ -318,6 +364,20 @@ namespace FitLog.Pages
         }
 
 
+
+        private void OpenFirstLink(object sender, RoutedEventArgs e)
+        {
+            string url = "https://vkusvill.ru/media/journal/osnovnye-printsipy-pravilnogo-nabora-vesa.html";
+
+            Process.Start(url);
+        }
+
+        private void OpenSecondLink(object sender, RoutedEventArgs e)
+        {
+            string url = "https://vkusvill.ru/media/journal/osnovnye-printsipy-pravilnogo-pokhudeniya-chto-nuzhno-est-i-chego-opasatsya.html";
+
+            Process.Start(url);
+        }
 
 
         private void ButtonSaveWeight_Click(object sender, RoutedEventArgs e)
@@ -329,7 +389,7 @@ namespace FitLog.Pages
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при сохранении данных: {ex.Message}");
+                CustomMessageBox.Show($"Ошибка при сохранении данных: {ex.Message}", "Ошибка", MessageWindowImage.Error, MessageWindowButton.Ok);
             }
         }
     }

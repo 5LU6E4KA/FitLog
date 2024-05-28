@@ -1,19 +1,9 @@
 ﻿using FitLog.Controls;
 using FitLog.Entities;
 using FitLog.HashingData;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using static FitLog.Controls.CustomMessageBox;
 
 namespace FitLog.Windows
@@ -95,7 +85,7 @@ namespace FitLog.Windows
 
             if (HashingPassword.VerifyPassword(password, user.Password))
             {
-                CustomMessageBox.Show("Авторизация прошла успешно!","Авторизация", MessageWindowImage.Information, MessageWindowButton.Ok);
+                CustomMessageBox.Show("Авторизация прошла успешно!", "Авторизация", MessageWindowImage.Information, MessageWindowButton.Ok);
                 return user;
             }
             else

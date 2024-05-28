@@ -18,6 +18,7 @@
         <BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
     </Window.Resources>
 
+
     <Border
         Padding="20"
         Background="#F7F6F4"
@@ -32,12 +33,10 @@
             </Grid.ColumnDefinitions>
 
 
-
-            <!--  Menu  -->
             <Border CornerRadius="18">
                 <Border.Background>
                     <LinearGradientBrush>
-                        <GradientStop Offset="0" Color="#523796" />
+                        <GradientStop Offset="0.2" Color="#523796" />
                         <GradientStop Offset="0.8" Color="#977AE1" />
                     </LinearGradientBrush>
                 </Border.Background>
@@ -50,30 +49,18 @@
                         Orientation="Horizontal">
 
                         <Grid>
-                            <Border
-                                Width="35"
-                                Height="35"
-                                Background="#ffffff"
-                                CornerRadius="50" />
+                            <Image
+                                Width="36"
+                                Height="36"
+                                Margin="5,0,0,0"
+                                Style="{DynamicResource MenuIcon}" />
 
-                            <Border
-                                Width="35"
-                                Height="35"
-                                BorderBrush="#ffffff"
-                                BorderThickness="3"
-                                CornerRadius="50">
-                                <Border.Effect>
-                                    <DropShadowEffect BlurRadius="10" Opacity="0.3" />
-                                </Border.Effect>
-
-
-
-                            </Border>
                         </Grid>
 
                         <TextBlock
                             Margin="10,0,0,3"
                             FontSize="30"
+                            FontWeight="SemiBold"
                             Foreground="#ffffff"
                             Text="FitLog">
                             <TextBlock.Effect>
@@ -151,9 +138,9 @@
                                 Width="20"
                                 Height="20"
                                 Margin="25,0,0,0"
-                                Style="{DynamicResource SleepIcon}" />
+                                Style="{DynamicResource LungsIcon}" />
 
-                            <TextBlock Style="{StaticResource menuButtonText}" Text="Сон" />
+                            <TextBlock Style="{StaticResource menuButtonText}" Text="Дыхание" />
                         </StackPanel>
                     </Button>
 
@@ -189,26 +176,34 @@
                                 Height="20"
                                 Margin="25,0,0,0"
                                 Style="{DynamicResource OutIcon}" />
-                            <!--<Icon:PackIconMaterial Kind="PhonePausedOutline" Style="{StaticResource menuButtonIcon}"/>-->
+                           
                             <TextBlock Style="{StaticResource menuButtonText}" Text="Выход" />
                         </StackPanel>
                     </Button>
 
                 </StackPanel>
             </Border>
+            <!--  Menu  -->
+
 
             <Grid Grid.Column="1">
                 <Border
                     Grid.Row="1"
+                    Padding="20,10,0,0"
                     Background="Transparent"
                     CornerRadius="0 0 5 0">
-                    <Frame
-                        x:Name="frameContent"
-                        Margin="20,10,0,0"
-                        NavigationUIVisibility="Hidden" />
+                    <Viewbox>
+                        <Frame
+                            x:Name="frameContent"
+                            Width="998"
+                            Height="733"
+                            NavigationUIVisibility="Hidden" />
+                    </Viewbox>
+
                 </Border>
             </Grid>
 
         </Grid>
     </Border>
+
 </Window>

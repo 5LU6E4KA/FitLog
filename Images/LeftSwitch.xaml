@@ -1,0 +1,28 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style x:Key="LeftSwitch" TargetType="{x:Type Image}">
+        <Style.Setters>
+            <Setter Property="Source">
+                <Setter.Value>
+                    <DrawingImage>
+                        <DrawingImage.Drawing>
+                            <DrawingGroup ClipGeometry="M0,0 V512 H512 V0 H0 Z">
+                                <DrawingGroup.Transform>
+                                    <TranslateTransform X="0.5" Y="0" />
+                                </DrawingGroup.Transform>
+                                <DrawingGroup Opacity="1">
+                                    <GeometryDrawing Geometry="F0 M512,512z M0,0z M511.5,248.5C511.5,253.167 511.5,257.833 511.5,262.5 509.018,268.48 504.685,272.647 498.5,275 355.5,275.333 212.5,275.667 69.5,276 93.3333,299.833 117.167,323.667 141,347.5 147.512,359.939 145.012,370.105 133.5,378 125.807,380.486 118.473,379.819 111.5,376 75.9723,340.139 40.139,304.639 4,269.5 2.47576,267.102 0.97576,264.769 -0.5,262.5 -0.5,257.833 -0.5,253.167 -0.5,248.5 0.97576,246.231 2.47576,243.898 4,241.5 40.139,206.361 75.9723,170.861 111.5,135 122.516,129.151 132.35,130.651 141,139.5 145.667,147.5 145.667,155.5 141,163.5 117.167,187.333 93.3333,211.167 69.5,235 212.5,235.333 355.5,235.667 498.5,236 504.685,238.353 509.018,242.52 511.5,248.5z">
+                                        <GeometryDrawing.Brush>
+                                            <SolidColorBrush Opacity="0.986" Color="#FF000000" />
+                                        </GeometryDrawing.Brush>
+                                    </GeometryDrawing>
+                                </DrawingGroup>
+                            </DrawingGroup>
+                        </DrawingImage.Drawing>
+                    </DrawingImage>
+                </Setter.Value>
+            </Setter>
+        </Style.Setters>
+    </Style>
+
+</ResourceDictionary>

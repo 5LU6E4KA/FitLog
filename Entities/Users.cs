@@ -17,11 +17,11 @@ namespace FitLog.Entities
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Users()
         {
+            this.FrequencyOfRespiratoryMovements = new HashSet<FrequencyOfRespiratoryMovements>();
             this.Glucoses = new HashSet<Glucoses>();
             this.Liquids = new HashSet<Liquids>();
             this.Meals = new HashSet<Meals>();
             this.Pulses = new HashSet<Pulses>();
-            this.Sleeps = new HashSet<Sleeps>();
             this.Temperatures = new HashSet<Temperatures>();
             this.Weights = new HashSet<Weights>();
         }
@@ -31,9 +31,11 @@ namespace FitLog.Entities
         public string Password { get; set; }
         public Nullable<int> FoodGoal { get; set; }
         public Nullable<int> LiquidGoal { get; set; }
-        public Nullable<int> WeightGoal { get; set; }
-        public Nullable<int> SleepGoal { get; set; }
+        public Nullable<decimal> WeightGoal { get; set; }
+        public Nullable<int> FrequencyGoal { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<FrequencyOfRespiratoryMovements> FrequencyOfRespiratoryMovements { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Glucoses> Glucoses { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
@@ -42,8 +44,6 @@ namespace FitLog.Entities
         public virtual ICollection<Meals> Meals { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Pulses> Pulses { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Sleeps> Sleeps { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Temperatures> Temperatures { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

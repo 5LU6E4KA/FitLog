@@ -1,0 +1,28 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style x:Key="RightSwitch" TargetType="{x:Type Image}">
+        <Style.Setters>
+            <Setter Property="Source">
+                <Setter.Value>
+                    <DrawingImage>
+                        <DrawingImage.Drawing>
+                            <DrawingGroup ClipGeometry="M0,0 V512 H512 V0 H0 Z">
+                                <DrawingGroup.Transform>
+                                    <TranslateTransform X="0.5" Y="0" />
+                                </DrawingGroup.Transform>
+                                <DrawingGroup Opacity="1">
+                                    <GeometryDrawing Geometry="F0 M512,512z M0,0z M511.5,248.5C511.5,253.167 511.5,257.833 511.5,262.5 510.024,264.769 508.524,267.102 507,269.5 470.861,304.639 435.028,340.139 399.5,376 388.484,381.849 378.65,380.349 370,371.5 365.333,363.5 365.333,355.5 370,347.5 393.833,323.667 417.667,299.833 441.5,276 298.5,275.667 155.5,275.333 12.5,275 6.31536,272.647 1.98203,268.48 -0.5,262.5 -0.5,257.833 -0.5,253.167 -0.5,248.5 1.98203,242.52 6.31536,238.353 12.5,236 155.5,235.667 298.5,235.333 441.5,235 417.667,211.167 393.833,187.333 370,163.5 363.488,151.061 365.988,140.895 377.5,133 385.193,130.514 392.527,131.181 399.5,135 435.028,170.861 470.861,206.361 507,241.5 508.524,243.898 510.024,246.231 511.5,248.5z">
+                                        <GeometryDrawing.Brush>
+                                            <SolidColorBrush Opacity="0.986" Color="#FF000000" />
+                                        </GeometryDrawing.Brush>
+                                    </GeometryDrawing>
+                                </DrawingGroup>
+                            </DrawingGroup>
+                        </DrawingImage.Drawing>
+                    </DrawingImage>
+                </Setter.Value>
+            </Setter>
+        </Style.Setters>
+    </Style>
+
+</ResourceDictionary>

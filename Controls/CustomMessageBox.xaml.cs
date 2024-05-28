@@ -5,9 +5,7 @@ using System.Windows.Controls;
 
 namespace FitLog.Controls
 {
-    /// <summary>
-    /// Логика взаимодействия для CustomMessageBox.xaml
-    /// </summary>
+
     public partial class CustomMessageBox : Window
     {
 

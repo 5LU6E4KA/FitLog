@@ -18,18 +18,15 @@
             <ColumnDefinition Width="1.5*" />
         </Grid.ColumnDefinitions>
 
-
-
         <Border CornerRadius="10 0 0 10">
             <Border.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                    <GradientStop Offset="0" Color="#523796" />
-                    <GradientStop Offset="1" Color="#523796" />
+                    <GradientStop Offset="0.29" Color="#523796" />
+                    <GradientStop Offset="0.81" Color="#977AE1" />
                 </LinearGradientBrush>
             </Border.Background>
 
             <Grid>
-
 
                 <StackPanel Margin="0,30" VerticalAlignment="Top">
                     <TextBlock Style="{StaticResource TitleText}" Text="FitLog" />
@@ -50,7 +47,7 @@
 
         <Border
             Grid.Column="1"
-            Background="#FFFFFF"
+            Background="#F7F6F4"
             CornerRadius="0 10 10 0"
             MouseDown="Border_MouseDown">
 
@@ -84,9 +81,15 @@
 
                     <Border
                         Margin="70,7"
-                        BorderBrush="#ACB0AF"
-                        BorderThickness="1"
+                        Background="#F2F1EC"
+                        BorderThickness="2"
                         CornerRadius="5">
+                        <Border.BorderBrush>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Offset="0.29" Color="#523796" />
+                                <GradientStop Offset="0.81" Color="#977AE1" />
+                            </LinearGradientBrush>
+                        </Border.BorderBrush>
                         <Grid Margin="7,9">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto" />
@@ -96,11 +99,13 @@
                             <Image Height="20" Style="{DynamicResource LoginIcon}" />
                             <TextBlock
                                 x:Name="textEmail"
+                                Background="#F2F1EC"
                                 MouseDown="textEmail_MouseDown"
                                 Style="{StaticResource textHint}"
                                 Text="Логин" />
                             <TextBox
                                 Name="txtEmail"
+                                Background="#F2F1EC"
                                 Style="{StaticResource textBox}"
                                 TextChanged="txtEmail_TextChanged" />
                         </Grid>
@@ -108,9 +113,16 @@
 
                     <Border
                         Margin="70,7"
-                        BorderBrush="#ACB0AF"
-                        BorderThickness="1"
+                        Background="#F2F1EC"
+                        BorderThickness="2"
                         CornerRadius="5">
+                        <Border.BorderBrush>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Offset="0.29" Color="#523796" />
+                                <GradientStop Offset="0.81" Color="#977AE1" />
+                            </LinearGradientBrush>
+                        </Border.BorderBrush>
+
                         <Grid Margin="7,9">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto" />
@@ -125,6 +137,7 @@
                                 Text="Пароль" />
                             <PasswordBox
                                 x:Name="passwordBox"
+                                Background="#F2F1EC"
                                 PasswordChanged="PasswordBox_PasswordChanged"
                                 Style="{StaticResource textBox}" />
                         </Grid>
@@ -133,6 +146,7 @@
                     <Button
                         Click="SignIn"
                         Content="Зарегистрироваться"
+                        FontWeight="SemiBold"
                         Style="{StaticResource mainButton}" />
 
                     <Button
@@ -140,6 +154,7 @@
                         VerticalAlignment="Center"
                         Click="TransitionToAuthorizationWindow"
                         Content="Авторизация"
+                        FontWeight="SemiBold"
                         Style="{StaticResource LinkButton}" />
 
                 </StackPanel>

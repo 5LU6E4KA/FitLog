@@ -25,11 +25,11 @@ namespace FitLog.Entities
             throw new UnintentionalCodeFirstException();
         }
     
+        public virtual DbSet<FrequencyOfRespiratoryMovements> FrequencyOfRespiratoryMovements { get; set; }
         public virtual DbSet<Glucoses> Glucoses { get; set; }
         public virtual DbSet<Liquids> Liquids { get; set; }
         public virtual DbSet<Meals> Meals { get; set; }
         public virtual DbSet<Pulses> Pulses { get; set; }
-        public virtual DbSet<Sleeps> Sleeps { get; set; }
         public virtual DbSet<Temperatures> Temperatures { get; set; }
         public virtual DbSet<Users> Users { get; set; }
         public virtual DbSet<Weights> Weights { get; set; }

@@ -1,4 +1,6 @@
-﻿using FitLog.Entities;
+﻿using FitLog.ClearFields;
+using FitLog.Controls;
+using FitLog.Entities;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using Syncfusion.DocIO.DLS;
@@ -9,8 +11,11 @@ using System.Data.Entity;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using static FitLog.Controls.CustomMessageBox;
 using static FitLog.DateClass.DateInfo;
 using static FitLog.Notifications.MyNotify;
 
@@ -91,74 +96,128 @@ namespace FitLog.Pages
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при сохранении данных: {ex.Message}");
+                CustomMessageBox.Show($"Ошибка при сохранении данных: {ex.Message}", "Ошибка", MessageWindowImage.Error, MessageWindowButton.Ok);
             }
         }
 
         public void SaveMeal()
         {
-            decimal caloriesConsumed = Convert.ToInt32(CarloriesGainedTextBox.Text);
+            decimal caloriesConsumed;
+            if (!decimal.TryParse(CarloriesGainedTextBox.Text, out caloriesConsumed))
+            {
+                CustomMessageBox.Show("Некорректное значение для калорийности", "Внимание", MessageWindowImage.Warning, MessageWindowButton.Ok);
+                return;
+            }
+
             DateTime today = DateTime.Today;
+            DateTime? newMealTime = FoodTimeDateTimePicker.Value;
 
-
-            if (string.IsNullOrWhiteSpace(CarloriesGainedTextBox.Text) || string.IsNullOrWhiteSpace(FoodProductTextBox.Text))
+            if (newMealTime == null)
             {
-                MessageBox.Show("Вы забыли указать количество калорий или съеденное блюдо");
+                CustomMessageBox.Show("Пожалуйста, заполните временной интервал", "Внимание", MessageWindowImage.Warning, MessageWindowButton.Ok);
                 return;
             }
 
-            if (Convert.ToDecimal(CarloriesGainedTextBox.Text) > 9999)
+            if (newMealTime.Value.Date > today)
             {
-                MessageBox.Show("Ограничение в 9999 килокалорий");
+                CustomMessageBox.Show("Нельзя вводить данные на будущие даты", "Внимание", MessageWindowImage.Warning, MessageWindowButton.Ok);
                 return;
             }
 
-            //if (new string[] { SugarTextBox.Text, CarbohydratesTextBox.Text, FatsTextBox.Text, ProteinTextBox.Text }.Any(x => CheckDecimal(x)))
-            //{
-            //    MessageBox.Show("Ограничение в 999 грамм");
-            //    return;
-            //}
+            if (string.IsNullOrWhiteSpace(FoodProductTextBox.Text))
+            {
+                CustomMessageBox.Show("Вы забыли указать съеденное блюдо", "Внимание", MessageWindowImage.Warning, MessageWindowButton.Ok);
+                return;
+            }
+
+            if (caloriesConsumed > 9999 || caloriesConsumed < 0)
+            {
+                CustomMessageBox.Show("Ограничение от 0 до 9999 килокалорий", "Внимание", MessageWindowImage.Warning, MessageWindowButton.Ok);
+                return;
+            }
 
             DatabaseContext.DbContext.Context.Meals.Add(new Meals
             {
                 UserID = _currentUser.ID,
-                AmountOfCalories = Convert.ToDecimal(CarloriesGainedTextBox.Text),
+                AmountOfCalories = caloriesConsumed,
                 Intake = EatingComboBox.SelectedItem?.ToString(),
                 FoodProduct = FoodProductTextBox.Text,
-                MealTime = FoodTimeDateTimePicker.Value
+                MealTime = newMealTime.Value
             });
 
             DatabaseContext.DbContext.Context.SaveChanges();
 
-            var mealsForToday = DatabaseContext.DbContext.Context.Meals
-            .Where(m => m.UserID == _currentUser.ID &&
-                 DbFunctions.TruncateTime(m.MealTime) == today)
-            .ToList();
+            FoodTimeDateTimePicker.Text = "";
+            ClearField.ClearTextBoxes(this);
 
-
-            // Посчитать сумму калорий
-            decimal totalCaloriesForToday = mealsForToday.Sum(m => m.AmountOfCalories);
-
-
-            // Сравнение с целью пользователя
-            if (totalCaloriesForToday == _currentUser.FoodGoal)
+            if (newMealTime.Value.Date == today)
             {
-                ShowNotification("Питание", "Вы достигли свою цель по калориям за сегодня!");
-                // Здесь можно выполнить дополнительные действия в случае достижения цели
-            }
+                var mealsForToday = DatabaseContext.DbContext.Context.Meals
+                    .Where(m => m.UserID == _currentUser.ID &&
+                                DbFunctions.TruncateTime(m.MealTime) == today)
+                    .ToList();
 
-            if (totalCaloriesForToday > _currentUser.FoodGoal)
-            {
-                ShowNotification("Питание", "Вы превысили свою цель по калориям за сегодня!");
-                // Здесь можно выполнить дополнительные действия в случае достижения цели
-            }
+                decimal totalCaloriesForToday = mealsForToday.Sum(m => m.AmountOfCalories);
 
-            //ClearField.ClearTextBoxes(this);
+                if (totalCaloriesForToday == _currentUser.FoodGoal)
+                {
+                    ShowNotification("Питание", "Вы достигли свою цель по калориям за сегодня!");
+                }
+                else if (totalCaloriesForToday > _currentUser.FoodGoal)
+                {
+                    ShowNotification("Питание", "Вы превысили свою цель по калориям за сегодня!");
+                }
+                else
+                {
+                    ShowNotification("Питание", "Продолжайте работать над своей целью!");
+                }
+            }
 
             EatingComboBox.SelectedIndex = 0;
         }
 
 
+        private void NumericAndCommaTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            string currentText = textBox.Text;
+            string newText = currentText.Insert(textBox.CaretIndex, e.Text);
+
+            // Разрешить только цифры и запятую
+            if (!char.IsDigit(e.Text, 0) && e.Text != ",")
+            {
+                e.Handled = true;
+                return;
+            }
+
+            // Запрет на ввод запятой первым символом
+            if (newText.StartsWith(","))
+            {
+                e.Handled = true;
+                return;
+            }
+
+            // Запрет на ввод запятой последним символом
+            if (newText.EndsWith(",") && newText.Count(c => c == ',') > 1)
+            {
+                e.Handled = true;
+                return;
+            }
+
+            // Запрет на ввод второй запятой
+            if (newText.Count(c => c == ',') > 1)
+            {
+                e.Handled = true;
+                return;
+            }
+        }
+
+        private void LetterOnlyTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            //Проверка на буквенные символы
+            Regex regex = new Regex("^[a-zA-Zа-яА-Я]+$");
+            e.Handled = !regex.IsMatch(e.Text);
+        }
 
         private void ButtonLeftCalories_Click(object sender, RoutedEventArgs e)
         {
@@ -203,7 +262,7 @@ namespace FitLog.Pages
         {
             ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
             string downloadsPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads";
-            string fileName = $"MealOutput_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.xlsx"; // Добавляем временный штамп к имени файла
+            string fileName = $"MealOutput_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.xlsx"; 
             string filePath = System.IO.Path.Combine(downloadsPath, fileName);
 
             FileInfo fileInfo = new FileInfo(filePath);
@@ -212,15 +271,15 @@ namespace FitLog.Pages
             {
                 ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("MealData");
 
-                // Добавляем заголовки
+                
                 worksheet.Cells[1, 1].Value = "Время измерения";
                 worksheet.Cells[1, 2].Value = "Продукт питания";
                 worksheet.Cells[1, 3].Value = "Прием пищи";
                 worksheet.Cells[1, 4].Value = "Количество килокалорий";
 
-                if (meals.Any()) // Проверяем, есть ли данные
+                if (meals.Any()) 
                 {
-                    // Добавляем данные
+                    
                     int row = 2;
                     foreach (var meal in meals)
                     {
@@ -231,12 +290,12 @@ namespace FitLog.Pages
                         row++;
                     }
 
-                    // Устанавливаем формат для времени
+                    
                     worksheet.Column(1).Style.Numberformat.Format = "hh:mm:ss dd-mm-yyyy";
                     worksheet.Cells[1, 1, 1, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                     worksheet.Cells[1, 1, 1, 2].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 
-                    // Устанавливаем выравнивание для данных
+                    
                     worksheet.Cells[2, 1, row - 1, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                     worksheet.Cells[2, 1, row - 1, 1].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                     worksheet.Cells[2, 3, row - 1, 4].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
@@ -247,10 +306,9 @@ namespace FitLog.Pages
                 // Автоподбор ширины столбцов
                 worksheet.Cells.AutoFitColumns();
 
-                // Сохраняем изменения
                 package.Save();
             }
-            MessageBox.Show($"Файл сохранен в папке \"Загрузки\": {filePath}", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+            CustomMessageBox.Show($"Файл сохранен в папке \"Загрузки\": {filePath}", "Успех", MessageWindowImage.Information, MessageWindowButton.Ok);
         }
 
         private void ButtonExportToExcelMeal_Click(object sender, RoutedEventArgs e)
@@ -271,15 +329,15 @@ namespace FitLog.Pages
                         AmountOfCalories = pulseMeasurement.AmountOfCalories
                     });
                 }
-
+                meals = meals.OrderBy(l => l.MealTime).ToList();
                 ExportToExcelMeal(meals);
             }
             else if (PeriodComboBox.SelectedValue.ToString() == "Неделя")
             {
-                // Начальная дата - 6 дней назад от текущего дня
+                
                 var startDate = DateTime.Now.Date.AddDays(-6);
 
-                // Конечная дата - текущий момент
+                
                 var endDate = DateTime.Now;
 
                 var info = DatabaseContext.DbContext.Context.Meals.ToList()
@@ -296,7 +354,7 @@ namespace FitLog.Pages
                         AmountOfCalories = meal.AmountOfCalories
                     });
                 }
-
+                meals = meals.OrderBy(l => l.MealTime).ToList();
                 ExportToExcelMeal(meals);
             }
 
@@ -304,18 +362,18 @@ namespace FitLog.Pages
 
         public static void ExportToWordMeal(List<Meals> meals)
         {
-            // Создаем новый документ Word
+            
             using (WordDocument document = new WordDocument())
             {
-                // Добавляем раздел с заголовком
+                
                 WSection section = document.AddSection() as WSection;
                 WParagraph paragraph = section.HeadersFooters.Header.AddParagraph() as WParagraph;
                 paragraph.AppendText("Meal Data").CharacterFormat.FontSize = 14;
                 paragraph.ParagraphFormat.HorizontalAlignment = Syncfusion.DocIO.DLS.HorizontalAlignment.Center;
 
-                // Добавляем таблицу
+                
                 WTable table = section.AddTable() as WTable;
-                table.ResetCells(meals.Count + 1, 4); // +1 для заголовков
+                table.ResetCells(meals.Count + 1, 4); 
 
                 // Добавляем заголовки таблицы
                 string[] headers = { "Момент измерения", "Продукт питания", "Прием пищи", "Калорийность (Ккал)" };
@@ -323,10 +381,10 @@ namespace FitLog.Pages
                 {
                     table[0, i].AddParagraph().AppendText(headers[i]);
                     table[0, i].CellFormat.VerticalAlignment = Syncfusion.DocIO.DLS.VerticalAlignment.Middle;
-                    //table[0, i].CellFormat.HorizontalAlignment = Syncfusion.DocIO.DLS.HorizontalAlignment.Center;
+                    
                 }
 
-                // Добавляем данные в таблицу
+                
                 for (int i = 0; i < meals.Count; i++)
                 {
                     Meals meal = meals[i];
@@ -336,7 +394,7 @@ namespace FitLog.Pages
                     table[i + 1, 3].AddParagraph().AppendText(meal.AmountOfCalories.ToString());
                 }
 
-                // Устанавливаем форматирование для таблицы
+                
                 foreach (WTableRow row in table.Rows)
                 {
                     foreach (WTableCell cell in row.Cells)
@@ -348,13 +406,12 @@ namespace FitLog.Pages
                     }
                 }
 
-                // Сохраняем документ
                 string downloadsPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads";
                 string fileName = $"MealOutput_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.docx";
                 string filePath = System.IO.Path.Combine(downloadsPath, fileName);
                 document.Save(filePath);
 
-                MessageBox.Show($"Файл сохранен в папке \"Загрузки\": {filePath}", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                CustomMessageBox.Show($"Файл сохранен в папке \"Загрузки\": {filePath}", "Успех", MessageWindowImage.Information, MessageWindowButton.Ok);
             }
         }
 
@@ -376,15 +433,15 @@ namespace FitLog.Pages
                         AmountOfCalories = pulseMeasurement.AmountOfCalories
                     });
                 }
-
+                meals = meals.OrderBy(l => l.MealTime).ToList();
                 ExportToWordMeal(meals);
             }
             else if (PeriodComboBox.SelectedValue.ToString() == "Неделя")
             {
-                // Начальная дата - 6 дней назад от текущего дня
+                
                 var startDate = DateTime.Now.Date.AddDays(-6);
 
-                // Конечная дата - текущий момент
+                
                 var endDate = DateTime.Now;
 
                 var info = DatabaseContext.DbContext.Context.Meals.ToList()
@@ -401,9 +458,11 @@ namespace FitLog.Pages
                         AmountOfCalories = meal.AmountOfCalories
                     });
                 }
-
+                meals = meals.OrderBy(l => l.MealTime).ToList();
                 ExportToWordMeal(meals);
             }
         }
+
+        
     }
 }

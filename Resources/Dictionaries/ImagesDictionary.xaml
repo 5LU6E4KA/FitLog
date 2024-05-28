@@ -12,16 +12,25 @@
         <ResourceDictionary Source="/Images/AttentionMessage.xaml" />
         <ResourceDictionary Source="/Images/ErrorMessage.xaml" />
         <ResourceDictionary Source="/Images/InformationMessage.xaml" />
+        <ResourceDictionary Source="/Images/WordIcon.xaml" />
+        <ResourceDictionary Source="/Images/ExcelIcon.xaml" />
+        <ResourceDictionary Source="/Images/LeftSwitch.xaml" />
+        <ResourceDictionary Source="/Images/RightSwitch.xaml" />
+        <ResourceDictionary Source="/Images/EmailIcon.xaml" />
+        <ResourceDictionary Source="/Images/GithubIcon.xaml" />
+        <ResourceDictionary Source="/Images/TelegramIcon.xaml" />
 
         <ResourceDictionary Source="/Images/MenuIcons/FoodIcon.xaml" />
         <ResourceDictionary Source="/Images/MenuIcons/ProfileIcon.xaml" />
         <ResourceDictionary Source="/Images/MenuIcons/OutIcon.xaml" />
         <ResourceDictionary Source="/Images/MenuIcons/WeightIcon.xaml" />
         <ResourceDictionary Source="/Images/MenuIcons/TemperatureIcon.xaml" />
-        <ResourceDictionary Source="/Images/MenuIcons/SleepIcon.xaml" />
+        <ResourceDictionary Source="/Images/MenuIcons/LungsIcon.xaml" />
         <ResourceDictionary Source="/Images/MenuIcons/GlucoseIcon.xaml" />
         <ResourceDictionary Source="/Images/MenuIcons/PulseIcon.xaml" />
         <ResourceDictionary Source="/Images/MenuIcons/LiquidIcon.xaml" />
+        <ResourceDictionary Source="/Images/MenuIcons/MenuIcon.xaml" />
+
 
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

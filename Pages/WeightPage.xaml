@@ -8,26 +8,33 @@
     xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     Title="WeightPage"
-    d:DesignHeight="650"
-    d:DesignWidth="800"
+    d:DesignHeight="733"
+    d:DesignWidth="998"
     Background="Transparent"
     mc:Ignorable="d">
 
     <Grid>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="325" />
+            <RowDefinition Height="300" />
             <RowDefinition />
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="695" />
             <ColumnDefinition />
-            <ColumnDefinition />
-            <ColumnDefinition Width="260" />
+            <ColumnDefinition Width="275" />
         </Grid.ColumnDefinitions>
 
         <Grid Grid.ColumnSpan="2">
             <Border Style="{StaticResource whiteBorder}">
+
+                <Border.BorderBrush>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Offset="0.29" Color="#523796" />
+                        <GradientStop Offset="0.81" Color="#977AE1" />
+                    </LinearGradientBrush>
+                </Border.BorderBrush>
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
@@ -36,35 +43,69 @@
                     </Grid.ColumnDefinitions>
 
                     <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition Height="20" />
-                        <RowDefinition />
-                        <RowDefinition Height="70" />
+                        <RowDefinition Height="25" />
+                        <RowDefinition Height="5" />
+                        <RowDefinition Height="36" />
+                        <RowDefinition Height="13" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="10" />
+                        <RowDefinition Height="65" />
                     </Grid.RowDefinitions>
 
-                    <Border
+                    <TextBlock
                         Grid.Row="0"
+                        Grid.ColumnSpan="3"
+                        HorizontalAlignment="Center"
+                        FontSize="20"
+                        FontWeight="Medium"
+                        Text="Дневник веса" />
+                    <TextBlock
+                        Grid.Row="2"
+                        Grid.ColumnSpan="3"
+                        HorizontalAlignment="Center"
+                        FontSize="14"
+                        FontWeight="Medium"
+                        Text="Отмечайте ваш вес, чтобы вести учет вашего физического баланса и следить за изменениями вашей форме"
+                        TextAlignment="Center"
+                        TextWrapping="Wrap" />
+
+                    <Border
+                        Grid.Row="4"
                         Grid.Column="0"
                         BorderBrush="Black"
-                        BorderThickness="1"
+                        BorderThickness="2"
                         Style="{StaticResource whiteBorder}">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="20" />
-                                <RowDefinition />
+                                <RowDefinition Height="33" />
 
                             </Grid.RowDefinitions>
 
                             <TextBlock
                                 Grid.Row="0"
                                 HorizontalAlignment="Center"
-                                FontSize="13"
-                                Foreground="#506A82"
-                                Text="Введите вес" />
+                                FontSize="16"
+                                FontWeight="Medium"
+                                Text="Вес тела" />
                             <TextBox
                                 x:Name="WeightTextBox"
                                 Grid.Row="1"
-                                Margin="0,10,0,0" />
+                                Width="240"
+                                Margin="0,10,0,0"
+                                HorizontalAlignment="Center"
+                                PreviewTextInput="NumericAndCommaTextBox_PreviewTextInput"
+                                Style="{StaticResource CustomTextBoxStyle}">
+                                <TextBox.ToolTip>
+                                    <ToolTip Style="{StaticResource CustomToolTipStyle}">
+                                        <StackPanel>
+                                            <TextBlock Margin="0,0,0,5" Text="Информация измеряется в килограммах" />
+                                            <TextBlock Text="Пример: 56,7" TextWrapping="Wrap" />
+                                        </StackPanel>
+                                    </ToolTip>
+                                </TextBox.ToolTip>
+                            </TextBox>
+
 
 
                         </Grid>
@@ -72,40 +113,47 @@
                     </Border>
 
                     <Border
-                        Grid.Row="0"
+                        Grid.Row="4"
                         Grid.Column="2"
                         BorderBrush="Black"
-                        BorderThickness="1"
+                        BorderThickness="2"
                         Style="{StaticResource whiteBorder}">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="20" />
-                                <RowDefinition />
+                                <RowDefinition Height="33" />
                             </Grid.RowDefinitions>
 
                             <TextBlock
                                 Grid.Row="0"
                                 HorizontalAlignment="Center"
-                                FontSize="13"
-                                Foreground="#506A82"
-                                Text="Введите момент измерения" />
+                                FontSize="16"
+                                FontWeight="Medium"
+                                Text="Временной интервал" />
                             <xctk:DateTimePicker
                                 x:Name="WeightTimePicker"
                                 Grid.Row="1"
-                                Margin="0,10,0,0" />
+                                Width="240"
+                                Margin="0,10,0,0"
+                                HorizontalAlignment="Center"
+                                BorderBrush="Black"
+                                FontWeight="Medium" />
 
 
                         </Grid>
                     </Border>
 
+
                     <Button
-                        Grid.Row="3"
+                        Grid.Row="7"
                         Grid.ColumnSpan="3"
                         Width="200"
+                        Margin="0,10,0,0"
                         HorizontalAlignment="Center"
                         Click="ButtonSaveWeight_Click"
                         Content="Сохранить"
-                        Style="{StaticResource mainButton}" />
+                        FontWeight="SemiBold"
+                        Style="{StaticResource PageButton}" />
 
 
                 </Grid>
@@ -113,6 +161,7 @@
             </Border>
 
         </Grid>
+
 
 
         <Grid Grid.Row="2" Grid.ColumnSpan="2">
@@ -133,50 +182,56 @@
                         Grid.Row="0"
                         HorizontalAlignment="Center"
                         FontSize="20"
-                        Foreground="#506A82"
+                        FontWeight="Medium"
                         Text="График изменения веса" />
 
-
                     <StackPanel
-                        Grid.Row="3"
+                        Grid.Row="2"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Top"
                         Orientation="Horizontal">
                         <TextBlock x:Name="DateWeightTextBlock" FontSize="14" />
                     </StackPanel>
 
-                    <syncfusion:SfChart x:Name="GraficWeight" Grid.Row="1">
-
-                        <syncfusion:SfChart.PrimaryAxis>
-                            <syncfusion:DateTimeAxis
-                                Name="xAxisWeight"
-                                EdgeLabelsDrawingMode="Shift"
-                                IntervalType="Hours"
-                                LabelFormat="HH:mm"
-                                LabelRotationAngle="0" />
-                        </syncfusion:SfChart.PrimaryAxis>
-
-                        <syncfusion:SfChart.SecondaryAxis>
-                            <syncfusion:NumericalAxis
-                                Name="yAxisWeight"
-                                Maximum="700"
-                                Minimum="0" />
-                        </syncfusion:SfChart.SecondaryAxis>
-
-                        <syncfusion:ScatterSeries
-                            Name="LineGraficWeight"
-                            ShowTooltip="True"
-                            XBindingPath="WeightTime"
-                            YBindingPath="Weight" />
-
-                    </syncfusion:SfChart>
 
 
+                    <Grid Grid.Row="1">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <syncfusion:SfChart x:Name="GraficWeight" Grid.Row="1">
+
+                                <syncfusion:SfChart.PrimaryAxis>
+                                    <syncfusion:DateTimeAxis
+                                        Name="xAxisWeight"
+                                        EdgeLabelsDrawingMode="Shift"
+                                        IntervalType="Hours"
+                                        LabelFormat="HH:mm"
+                                        LabelRotationAngle="0" />
+                                </syncfusion:SfChart.PrimaryAxis>
+
+                                <syncfusion:SfChart.SecondaryAxis>
+                                    <syncfusion:NumericalAxis
+                                        Name="yAxisWeight"
+                                        Maximum="650"
+                                        Minimum="0" />
+                                </syncfusion:SfChart.SecondaryAxis>
+
+                                <syncfusion:ScatterSeries
+                                    Name="LineGraficWeight"
+                                    Interior="#9370D8"
+                                    ShowTooltip="True"
+                                    XBindingPath="WeightTime"
+                                    YBindingPath="Weight" />
+
+                            </syncfusion:SfChart>
 
 
 
-
-
+                        </Grid>
+                    </Grid>
                 </Grid>
             </Border>
         </Grid>
@@ -192,50 +247,39 @@
                     <TextBlock
                         HorizontalAlignment="Center"
                         FontSize="20"
-                        Foreground="#506A82"
+                        FontWeight="Medium"
                         Text="Рекомендации" />
                     <TextBlock
                         Margin="0,10,0,0"
                         FontSize="13"
-                        Foreground="#506A82"
-                        Text="Откройте для себя лучшие практики и рекомендации по здоровому питанию"
+                        FontWeight="Medium"
+                        Text="Просмотрите рекомендациии по поддержанию оптимального веса тела"
+                        TextAlignment="Center"
                         TextWrapping="Wrap" />
-                    <Border
-                        Height="40"
-                        Margin="0,10"
-                        BorderBrush="Gray"
-                        BorderThickness="1"
-                        CornerRadius="15">
-                        <Button
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Content="Основы здорового питания"
-                            Style="{StaticResource LinkButtonrecomendation}" />
-                    </Border>
-                    <Border
-                        Height="40"
-                        Margin="0,10"
-                        BorderBrush="Gray"
-                        BorderThickness="1"
-                        CornerRadius="15">
-                        <Button
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Content="Здоровые перекусы"
-                            Style="{StaticResource LinkButtonrecomendation}" />
-                    </Border>
-                    <Border
-                        Height="40"
-                        Margin="0,10"
-                        BorderBrush="Gray"
-                        BorderThickness="1"
-                        CornerRadius="15">
-                        <Button
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Content="Рецепты"
-                            Style="{StaticResource LinkButtonrecomendation}" />
-                    </Border>
+
+
+                    <Button
+                        Margin="0,15"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Click="OpenFirstLink"
+                        Content="Набор массы тела"
+                        FontWeight="SemiBold"
+                        Style="{StaticResource RecomendationButton}" />
+
+
+                    <Button
+                        Margin="0,15"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Click="OpenSecondLink"
+                        Content="Советы по похудению"
+                        FontWeight="SemiBold"
+                        Style="{StaticResource RecomendationButton}" />
+
+
+
+
                 </StackPanel>
             </Border>
         </Grid>
@@ -261,7 +305,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="150" />
                         <RowDefinition />
-                        <RowDefinition Height="20" />
+                        <RowDefinition Height="15" />
                         <RowDefinition />
                     </Grid.RowDefinitions>
 
@@ -269,23 +313,64 @@
                         <TextBlock
                             HorizontalAlignment="Center"
                             FontSize="20"
-                            Foreground="#506A82"
+                            FontWeight="Medium"
                             Text="Экспорт данных" />
                         <TextBlock
                             Margin="0,10,0,0"
                             FontSize="13"
-                            Foreground="#506A82"
+                            FontWeight="Medium"
                             Text="Выберите желаемый период и нажмите на кнопку для быстрого сохранения и анализа вашей информации"
+                            TextAlignment="Center"
                             TextWrapping="Wrap" />
                         <ComboBox
                             x:Name="PeriodComboBox"
                             Grid.Row="1"
                             Margin="0,10,0,0"
-                            ItemsSource="{Binding Period}" />
+                            ItemsSource="{Binding Period}"
+                            Style="{StaticResource ComboBoxStyle}" />
                     </StackPanel>
 
-                    <Button Grid.Row="1" Click="ButtonExportToExcelWeight_Click" />
-                    <Button Grid.Row="3" Click="ButtonExportToWordWeight_Click" />
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="140" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <Button
+                            Grid.Column="1"
+                            Click="ButtonExportToExcelWeight_Click"
+                            Style="{StaticResource RoundedButtonStyle}">
+                            <Image
+                                Width="50"
+                                Height="50"
+                                Style="{DynamicResource ExcelIcon}" />
+                        </Button>
+
+
+                    </Grid>
+
+                    <Grid Grid.Row="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="140" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <Button
+                            Grid.Column="1"
+                            Click="ButtonExportToWordWeight_Click"
+                            Style="{StaticResource RoundedButtonStyle}">
+                            <Image
+                                Width="50"
+                                Height="50"
+                                Style="{DynamicResource WordIcon}" />
+                        </Button>
+
+
+                    </Grid>
+
+
                 </Grid>
 
 

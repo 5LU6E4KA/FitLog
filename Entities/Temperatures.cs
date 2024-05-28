@@ -16,7 +16,6 @@ namespace FitLog.Entities
     {
         public int ID { get; set; }
         public Nullable<int> UserID { get; set; }
-        public string MeasurementPlace { get; set; }
         public decimal BodyTemperature { get; set; }
         public Nullable<System.DateTime> MeasurementTimeTemperature { get; set; }
     

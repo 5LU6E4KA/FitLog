@@ -1,5 +1,5 @@
 ﻿<Page
-    x:Class="FitLog.Pages.MealPage"
+    x:Class="FitLog.Pages.FrequencyOfRespiratoryMovementsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -7,7 +7,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-    Title="MealPage"
     d:DesignHeight="733"
     d:DesignWidth="998"
     Background="Transparent"
@@ -16,7 +15,7 @@
     <Grid>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="390" />
+            <RowDefinition Height="300" />
             <RowDefinition />
         </Grid.RowDefinitions>
 
@@ -49,7 +48,6 @@
                         <RowDefinition Height="13" />
                         <RowDefinition Height="*" />
                         <RowDefinition Height="10" />
-                        <RowDefinition Height="*" />
                         <RowDefinition Height="65" />
                     </Grid.RowDefinitions>
 
@@ -59,14 +57,14 @@
                         HorizontalAlignment="Center"
                         FontSize="20"
                         FontWeight="Medium"
-                        Text="Журнал питания" />
+                        Text="Дневник частоты дыхательных движений" />
                     <TextBlock
                         Grid.Row="2"
                         Grid.ColumnSpan="3"
                         HorizontalAlignment="Center"
                         FontSize="14"
                         FontWeight="Medium"
-                        Text="Вносите информацию о вашем питании и калорийном балансе для отслеживания и контроля вашего рациона и здоровья"
+                        Text="Отмечайте данные о частоте дыхательных движений для контроля вашего дыхательного ритма и отслеживания изменений в дыхании в разное время суток"
                         TextAlignment="Center"
                         TextWrapping="Wrap" />
 
@@ -88,24 +86,26 @@
                                 HorizontalAlignment="Center"
                                 FontSize="16"
                                 FontWeight="Medium"
-                                Text="Количество килокалорий" />
+                                Text="Показатель ЧДД" />
                             <TextBox
-                                x:Name="CarloriesGainedTextBox"
+                                x:Name="FrequencyTextBox"
                                 Grid.Row="1"
                                 Width="240"
                                 Margin="0,10,0,0"
                                 HorizontalAlignment="Center"
-                                PreviewTextInput="NumericAndCommaTextBox_PreviewTextInput"
+                                PreviewTextInput="NumericTextBox_PreviewTextInput"
                                 Style="{StaticResource CustomTextBoxStyle}">
                                 <TextBox.ToolTip>
                                     <ToolTip Style="{StaticResource CustomToolTipStyle}">
                                         <StackPanel>
-                                            <TextBlock Margin="0,0,0,5" Text="Информация измеряется в килокалориях" />
-                                            <TextBlock Text="Пример: 450" TextWrapping="Wrap" />
+                                            <TextBlock Margin="0,0,0,5" Text="Информация измеряется во вдох за минуту " />
+                                            <TextBlock Text="Пример: 16" TextWrapping="Wrap" />
                                         </StackPanel>
                                     </ToolTip>
                                 </TextBox.ToolTip>
                             </TextBox>
+
+
 
                         </Grid>
 
@@ -128,82 +128,9 @@
                                 HorizontalAlignment="Center"
                                 FontSize="16"
                                 FontWeight="Medium"
-                                Text="Продукт питания" />
-                            <TextBox
-                                x:Name="FoodProductTextBox"
-                                Grid.Row="1"
-                                Width="240"
-                                Margin="0,10,0,0"
-                                HorizontalAlignment="Center"
-                                MaxLength="40"
-                                PreviewTextInput="LetterOnlyTextBox_PreviewTextInput"
-                                Style="{StaticResource CustomTextBoxStyle}">
-                                <TextBox.ToolTip>
-                                    <ToolTip Style="{StaticResource CustomToolTipStyle}">
-                                        <StackPanel>
-                                            <TextBlock Margin="0,0,0,5" Text="Пример: каша" />
-                                        </StackPanel>
-                                    </ToolTip>
-                                </TextBox.ToolTip>
-                            </TextBox>
-
-
-                        </Grid>
-                    </Border>
-
-                    <Border
-                        Grid.Row="6"
-                        Grid.Column="0"
-                        BorderBrush="Black"
-                        BorderThickness="2"
-                        Style="{StaticResource whiteBorder}">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="20" />
-                                <RowDefinition Height="33" />
-                            </Grid.RowDefinitions>
-
-                            <TextBlock
-                                Grid.Row="0"
-                                Height="20"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Top"
-                                FontSize="16"
-                                FontWeight="Medium"
-                                Text="Прием пищи" />
-                            <ComboBox
-                                x:Name="EatingComboBox"
-                                Grid.Row="1"
-                                Width="240"
-                                Margin="0,10,0,0"
-                                HorizontalAlignment="Center"
-                                ItemsSource="{Binding Eating}"
-                                Style="{StaticResource ComboBoxStyle}" />
-
-
-                        </Grid>
-                    </Border>
-
-                    <Border
-                        Grid.Row="6"
-                        Grid.Column="2"
-                        BorderBrush="Black"
-                        BorderThickness="2"
-                        Style="{StaticResource whiteBorder}">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="20" />
-                                <RowDefinition Height="33" />
-                            </Grid.RowDefinitions>
-
-                            <TextBlock
-                                Grid.Row="0"
-                                HorizontalAlignment="Center"
-                                FontSize="16"
-                                FontWeight="Medium"
                                 Text="Временной интервал" />
                             <xctk:DateTimePicker
-                                x:Name="FoodTimeDateTimePicker"
+                                x:Name="FrequencyTimePicker"
                                 Grid.Row="1"
                                 Width="240"
                                 Margin="0,10,0,0"
@@ -215,13 +142,14 @@
                         </Grid>
                     </Border>
 
+
                     <Button
                         Grid.Row="7"
                         Grid.ColumnSpan="3"
                         Width="200"
                         Margin="0,10,0,0"
                         HorizontalAlignment="Center"
-                        Click="ButtonSaveCalories_Click"
+                        Click="ButtonSaveFrequencyOfRespiratoryMovements_Click"
                         Content="Сохранить"
                         FontWeight="SemiBold"
                         Style="{StaticResource PageButton}" />
@@ -245,7 +173,6 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="25" />
-                        <RowDefinition Height="25" />
                         <RowDefinition Height="*" />
                         <RowDefinition Height="25" />
                     </Grid.RowDefinitions>
@@ -255,73 +182,51 @@
                         HorizontalAlignment="Center"
                         FontSize="20"
                         FontWeight="Medium"
-                        Text="График потребления килокалорий" />
-
-                    <Button
-                        Grid.Row="1"
-                        HorizontalAlignment="Center"
-                        Click="ButtonThisWeek_Click"
-                        Content="Текущая неделя"
-                        FontWeight="Medium"
-                        Style="{StaticResource LinkButtonrecomendation}" />
+                        Text="График частоты дыхательных движений" />
 
                     <StackPanel
-                        Grid.Row="3"
+                        Grid.Row="2"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Top"
                         Orientation="Horizontal">
-                        <TextBlock x:Name="StartDateMealTextBlock" FontSize="14" />
-                        <TextBlock FontSize="14" Text=" - " />
-                        <TextBlock x:Name="FinishDateMealTextBlock" FontSize="14" />
+                        <TextBlock x:Name="DateFrequencyTextBlock" FontSize="14" />
                     </StackPanel>
 
 
 
-                    <Grid Grid.Row="2">
+                    <Grid Grid.Row="1">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="25" />
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="25" />
                             </Grid.ColumnDefinitions>
 
-                            <Button
-                                Grid.Column="0"
-                                VerticalAlignment="Center"
-                                Click="ButtonLeftCalories_Click"
-                                Style="{StaticResource SwitchWeek}">
-                                <Image
-                                    Width="15"
-                                    Height="15"
-                                    HorizontalAlignment="Center"
-                                    Style="{DynamicResource LeftSwitch}" />
-                            </Button>
+                            <syncfusion:SfChart x:Name="GraficFrequencyOfRespiratoryMovements" Grid.Row="1">
 
+                                <syncfusion:SfChart.PrimaryAxis>
+                                    <syncfusion:DateTimeAxis
+                                        Name="xAxisFrequency"
+                                        EdgeLabelsDrawingMode="Shift"
+                                        IntervalType="Hours"
+                                        LabelFormat="HH:mm"
+                                        LabelRotationAngle="0" />
+                                </syncfusion:SfChart.PrimaryAxis>
 
-                            <Button
-                                Grid.Column="2"
-                                VerticalAlignment="Center"
-                                Click="ButtonRightCalories_Click"
-                                Style="{StaticResource SwitchWeek}">
-                                <Image
-                                    Width="15"
-                                    Height="15"
-                                    HorizontalAlignment="Center"
-                                    Style="{DynamicResource RightSwitch}" />
-                            </Button>
+                                <syncfusion:SfChart.SecondaryAxis>
+                                    <syncfusion:NumericalAxis
+                                        Name="yAxisFrequency"
+                                        Maximum="60"
+                                        Minimum="0" />
+                                </syncfusion:SfChart.SecondaryAxis>
 
-
-
-                            <syncfusion:SfChart x:Name="GraficCalroies" Grid.Column="1">
-
-                                <syncfusion:ColumnSeries
-                                    Name="ColGraficCalroies"
+                                <syncfusion:ScatterSeries
+                                    Name="LineGraficFrequency"
                                     Interior="#9370D8"
                                     ShowTooltip="True"
-                                    XBindingPath="Day"
-                                    YBindingPath="Calories" />
+                                    XBindingPath="FrequencyTime"
+                                    YBindingPath="FrequencyTwo" />
 
                             </syncfusion:SfChart>
+
 
 
                         </Grid>
@@ -347,7 +252,7 @@
                         Margin="0,10,0,0"
                         FontSize="13"
                         FontWeight="Medium"
-                        Text="Откройте для себя лучшие практики и рекомендации по здоровому питанию"
+                        Text="Изучите рекомендации по поддержанию здорового ритма дыхания"
                         TextAlignment="Center"
                         TextWrapping="Wrap" />
 
@@ -356,8 +261,8 @@
                         Margin="0,15"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
-                        Click="OpenBasicsHealthyDiet"
-                        Content="Здоровый рацион"
+                        Click="OpenFirstLink"
+                        Content="Дыхательная гимнастика"
                         FontWeight="SemiBold"
                         Style="{StaticResource RecomendationButton}" />
 
@@ -366,20 +271,13 @@
                         Margin="0,15"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
-                        Click="OpenHealthySnacks"
-                        Content="Здоровые перекусы"
+                        Click="OpenSecondLink"
+                        Content="Правильное дыхание"
                         FontWeight="SemiBold"
                         Style="{StaticResource RecomendationButton}" />
 
 
-                    <Button
-                        Margin="0,15"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Click="OpenRecipes"
-                        Content="Рецепты"
-                        FontWeight="SemiBold"
-                        Style="{StaticResource RecomendationButton}" />
+
 
                 </StackPanel>
             </Border>
@@ -405,6 +303,8 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="150" />
+                        <RowDefinition />
+                        <RowDefinition Height="15" />
                         <RowDefinition />
                     </Grid.RowDefinitions>
 
@@ -432,13 +332,13 @@
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
-                            <ColumnDefinition Width="10" />
+                            <ColumnDefinition Width="140" />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
 
                         <Button
-                            Grid.Column="0"
-                            Click="ButtonExportToExcelMeal_Click"
+                            Grid.Column="1"
+                            Click="ButtonExportToExcelFrequencyOfRespiratoryMovements_Click"
                             Style="{StaticResource RoundedButtonStyle}">
                             <Image
                                 Width="50"
@@ -446,15 +346,27 @@
                                 Style="{DynamicResource ExcelIcon}" />
                         </Button>
 
+
+                    </Grid>
+
+                    <Grid Grid.Row="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="140" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
                         <Button
-                            Grid.Column="2"
-                            Click="ButtonExportToWordMeal_Click"
+                            Grid.Column="1"
+                            Click="ButtonExportToWordFrequencyOfRespiratoryMovements_Click"
                             Style="{StaticResource RoundedButtonStyle}">
                             <Image
                                 Width="50"
                                 Height="50"
                                 Style="{DynamicResource WordIcon}" />
                         </Button>
+
+
                     </Grid>
 
 
@@ -468,6 +380,4 @@
 
 
     </Grid>
-
-
 </Page>

@@ -12,14 +12,12 @@ namespace FitLog.Entities
     using System;
     using System.Collections.Generic;
     
-    public partial class Sleeps
+    public partial class FrequencyOfRespiratoryMovements
     {
         public int ID { get; set; }
         public Nullable<int> UserID { get; set; }
-        public System.DateTime BedTime { get; set; }
-        public System.DateTime WakeUpTime { get; set; }
-        public Nullable<System.DateTime> SleepTime { get; set; }
-        public Nullable<int> HoursOfSleep { get; set; }
+        public Nullable<int> Frequency { get; set; }
+        public Nullable<System.DateTime> MeasurementTimeFrequency { get; set; }
     
         public virtual Users Users { get; set; }
     }

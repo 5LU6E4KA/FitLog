@@ -5,6 +5,15 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
       <Schema Namespace="Хранилище FitLogModel" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="FrequencyOfRespiratoryMovements">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserID" Type="int" />
+          <Property Name="Frequency" Type="int" />
+          <Property Name="MeasurementTimeFrequency" Type="datetime" />
+        </EntityType>
         <EntityType Name="Glucoses">
           <Key>
             <PropertyRef Name="ID" />
@@ -44,24 +53,12 @@
           <Property Name="FrequencyOfContractions" Type="int" Nullable="false" />
           <Property Name="MeasurementTimePulse" Type="datetime" />
         </EntityType>
-        <EntityType Name="Sleeps">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="UserID" Type="int" />
-          <Property Name="BedTime" Type="datetime" Nullable="false" />
-          <Property Name="WakeUpTime" Type="datetime" Nullable="false" />
-          <Property Name="SleepTime" Type="datetime" />
-          <Property Name="HoursOfSleep" Type="int" />
-        </EntityType>
         <EntityType Name="Temperatures">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="UserID" Type="int" />
-          <Property Name="MeasurementPlace" Type="nvarchar" MaxLength="50" />
           <Property Name="BodyTemperature" Type="decimal" Precision="3" Scale="1" Nullable="false" />
           <Property Name="MeasurementTimeTemperature" Type="datetime" />
         </EntityType>
@@ -74,8 +71,8 @@
           <Property Name="Password" Type="nvarchar(max)" />
           <Property Name="FoodGoal" Type="int" />
           <Property Name="LiquidGoal" Type="int" />
-          <Property Name="WeightGoal" Type="int" />
-          <Property Name="SleepGoal" Type="int" />
+          <Property Name="WeightGoal" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="FrequencyGoal" Type="int" />
         </EntityType>
         <EntityType Name="Weights">
           <Key>
@@ -86,7 +83,19 @@
           <Property Name="BodyWeight" Type="decimal" Precision="4" Scale="1" Nullable="false" />
           <Property Name="MeasurementTimeWeight" Type="datetime" />
         </EntityType>
-        <Association Name="FK__Glucoses__UserID__1AD3FDA4">
+        <Association Name="FK__Frequency__UserI__32AB8735">
+          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+          <End Role="FrequencyOfRespiratoryMovements" Type="Self.FrequencyOfRespiratoryMovements" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="FrequencyOfRespiratoryMovements">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Glucoses__UserID__30C33EC3">
           <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
           <End Role="Glucoses" Type="Self.Glucoses" Multiplicity="*" />
           <ReferentialConstraint>
@@ -98,7 +107,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Liquids__UserID__18EBB532">
+        <Association Name="FK__Liquids__UserID__2EDAF651">
           <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
           <End Role="Liquids" Type="Self.Liquids" Multiplicity="*" />
           <ReferentialConstraint>
@@ -110,7 +119,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Meals__UserID__17F790F9">
+        <Association Name="FK__Meals__UserID__2DE6D218">
           <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
           <End Role="Meals" Type="Self.Meals" Multiplicity="*" />
           <ReferentialConstraint>
@@ -122,7 +131,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Pulses__UserID__19DFD96B">
+        <Association Name="FK__Pulses__UserID__2FCF1A8A">
           <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
           <End Role="Pulses" Type="Self.Pulses" Multiplicity="*" />
           <ReferentialConstraint>
@@ -134,19 +143,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Sleeps__UserID__1BC821DD">
-          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
-          <End Role="Sleeps" Type="Self.Sleeps" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Users">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="Sleeps">
-              <PropertyRef Name="UserID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__Temperatu__UserI__1CBC4616">
+        <Association Name="FK__Temperatu__UserI__31B762FC">
           <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
           <End Role="Temperatures" Type="Self.Temperatures" Multiplicity="*" />
           <ReferentialConstraint>
@@ -158,7 +155,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Weights__UserID__1DB06A4F">
+        <Association Name="FK__Weights__UserID__339FAB6E">
           <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
           <End Role="Weights" Type="Self.Weights" Multiplicity="*" />
           <ReferentialConstraint>
@@ -171,39 +168,39 @@
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="Хранилище FitLogModelContainer">
+          <EntitySet Name="FrequencyOfRespiratoryMovements" EntityType="Self.FrequencyOfRespiratoryMovements" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Glucoses" EntityType="Self.Glucoses" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Liquids" EntityType="Self.Liquids" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Meals" EntityType="Self.Meals" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Pulses" EntityType="Self.Pulses" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Sleeps" EntityType="Self.Sleeps" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Temperatures" EntityType="Self.Temperatures" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Weights" EntityType="Self.Weights" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK__Glucoses__UserID__1AD3FDA4" Association="Self.FK__Glucoses__UserID__1AD3FDA4">
+          <AssociationSet Name="FK__Frequency__UserI__32AB8735" Association="Self.FK__Frequency__UserI__32AB8735">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="FrequencyOfRespiratoryMovements" EntitySet="FrequencyOfRespiratoryMovements" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Glucoses__UserID__30C33EC3" Association="Self.FK__Glucoses__UserID__30C33EC3">
             <End Role="Users" EntitySet="Users" />
             <End Role="Glucoses" EntitySet="Glucoses" />
           </AssociationSet>
-          <AssociationSet Name="FK__Liquids__UserID__18EBB532" Association="Self.FK__Liquids__UserID__18EBB532">
+          <AssociationSet Name="FK__Liquids__UserID__2EDAF651" Association="Self.FK__Liquids__UserID__2EDAF651">
             <End Role="Users" EntitySet="Users" />
             <End Role="Liquids" EntitySet="Liquids" />
           </AssociationSet>
-          <AssociationSet Name="FK__Meals__UserID__17F790F9" Association="Self.FK__Meals__UserID__17F790F9">
+          <AssociationSet Name="FK__Meals__UserID__2DE6D218" Association="Self.FK__Meals__UserID__2DE6D218">
             <End Role="Users" EntitySet="Users" />
             <End Role="Meals" EntitySet="Meals" />
           </AssociationSet>
-          <AssociationSet Name="FK__Pulses__UserID__19DFD96B" Association="Self.FK__Pulses__UserID__19DFD96B">
+          <AssociationSet Name="FK__Pulses__UserID__2FCF1A8A" Association="Self.FK__Pulses__UserID__2FCF1A8A">
             <End Role="Users" EntitySet="Users" />
             <End Role="Pulses" EntitySet="Pulses" />
           </AssociationSet>
-          <AssociationSet Name="FK__Sleeps__UserID__1BC821DD" Association="Self.FK__Sleeps__UserID__1BC821DD">
-            <End Role="Users" EntitySet="Users" />
-            <End Role="Sleeps" EntitySet="Sleeps" />
-          </AssociationSet>
-          <AssociationSet Name="FK__Temperatu__UserI__1CBC4616" Association="Self.FK__Temperatu__UserI__1CBC4616">
+          <AssociationSet Name="FK__Temperatu__UserI__31B762FC" Association="Self.FK__Temperatu__UserI__31B762FC">
             <End Role="Users" EntitySet="Users" />
             <End Role="Temperatures" EntitySet="Temperatures" />
           </AssociationSet>
-          <AssociationSet Name="FK__Weights__UserID__1DB06A4F" Association="Self.FK__Weights__UserID__1DB06A4F">
+          <AssociationSet Name="FK__Weights__UserID__339FAB6E" Association="Self.FK__Weights__UserID__339FAB6E">
             <End Role="Users" EntitySet="Users" />
             <End Role="Weights" EntitySet="Weights" />
           </AssociationSet>
@@ -213,6 +210,16 @@
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="FitLogModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="FrequencyOfRespiratoryMovements">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserID" Type="Int32" />
+          <Property Name="Frequency" Type="Int32" />
+          <Property Name="MeasurementTimeFrequency" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Users" Relationship="Self.FK__Frequency__UserI__32AB8735" FromRole="FrequencyOfRespiratoryMovements" ToRole="Users" />
+        </EntityType>
         <EntityType Name="Glucoses">
           <Key>
             <PropertyRef Name="ID" />
@@ -221,7 +228,7 @@
           <Property Name="UserID" Type="Int32" />
           <Property Name="GlucoseLevel" Type="Decimal" Precision="3" Scale="1" Nullable="false" />
           <Property Name="MeasurementTimeGlucose" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="Users" Relationship="Self.FK__Glucoses__UserID__1AD3FDA4" FromRole="Glucoses" ToRole="Users" />
+          <NavigationProperty Name="Users" Relationship="Self.FK__Glucoses__UserID__30C33EC3" FromRole="Glucoses" ToRole="Users" />
         </EntityType>
         <EntityType Name="Liquids">
           <Key>
@@ -232,7 +239,7 @@
           <Property Name="LiquidLevel" Type="Decimal" Precision="6" Scale="2" Nullable="false" />
           <Property Name="LiquidType" Type="String" MaxLength="45" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="DrinkingTime" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="Users" Relationship="Self.FK__Liquids__UserID__18EBB532" FromRole="Liquids" ToRole="Users" />
+          <NavigationProperty Name="Users" Relationship="Self.FK__Liquids__UserID__2EDAF651" FromRole="Liquids" ToRole="Users" />
         </EntityType>
         <EntityType Name="Meals">
           <Key>
@@ -244,7 +251,7 @@
           <Property Name="FoodProduct" Type="String" MaxLength="45" FixedLength="false" Unicode="true" />
           <Property Name="Intake" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="MealTime" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="Users" Relationship="Self.FK__Meals__UserID__17F790F9" FromRole="Meals" ToRole="Users" />
+          <NavigationProperty Name="Users" Relationship="Self.FK__Meals__UserID__2DE6D218" FromRole="Meals" ToRole="Users" />
         </EntityType>
         <EntityType Name="Pulses">
           <Key>
@@ -254,19 +261,7 @@
           <Property Name="UserID" Type="Int32" />
           <Property Name="FrequencyOfContractions" Type="Int32" Nullable="false" />
           <Property Name="MeasurementTimePulse" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="Users" Relationship="Self.FK__Pulses__UserID__19DFD96B" FromRole="Pulses" ToRole="Users" />
-        </EntityType>
-        <EntityType Name="Sleeps">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="UserID" Type="Int32" />
-          <Property Name="BedTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="WakeUpTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="SleepTime" Type="DateTime" Precision="3" />
-          <Property Name="HoursOfSleep" Type="Int32" />
-          <NavigationProperty Name="Users" Relationship="Self.FK__Sleeps__UserID__1BC821DD" FromRole="Sleeps" ToRole="Users" />
+          <NavigationProperty Name="Users" Relationship="Self.FK__Pulses__UserID__2FCF1A8A" FromRole="Pulses" ToRole="Users" />
         </EntityType>
         <EntityType Name="Temperatures">
           <Key>
@@ -274,10 +269,9 @@
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="UserID" Type="Int32" />
-          <Property Name="MeasurementPlace" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="BodyTemperature" Type="Decimal" Precision="3" Scale="1" Nullable="false" />
           <Property Name="MeasurementTimeTemperature" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="Users" Relationship="Self.FK__Temperatu__UserI__1CBC4616" FromRole="Temperatures" ToRole="Users" />
+          <NavigationProperty Name="Users" Relationship="Self.FK__Temperatu__UserI__31B762FC" FromRole="Temperatures" ToRole="Users" />
         </EntityType>
         <EntityType Name="Users">
           <Key>
@@ -288,15 +282,15 @@
           <Property Name="Password" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="FoodGoal" Type="Int32" />
           <Property Name="LiquidGoal" Type="Int32" />
-          <Property Name="WeightGoal" Type="Int32" />
-          <Property Name="SleepGoal" Type="Int32" />
-          <NavigationProperty Name="Glucoses" Relationship="Self.FK__Glucoses__UserID__1AD3FDA4" FromRole="Users" ToRole="Glucoses" />
-          <NavigationProperty Name="Liquids" Relationship="Self.FK__Liquids__UserID__18EBB532" FromRole="Users" ToRole="Liquids" />
-          <NavigationProperty Name="Meals" Relationship="Self.FK__Meals__UserID__17F790F9" FromRole="Users" ToRole="Meals" />
-          <NavigationProperty Name="Pulses" Relationship="Self.FK__Pulses__UserID__19DFD96B" FromRole="Users" ToRole="Pulses" />
-          <NavigationProperty Name="Sleeps" Relationship="Self.FK__Sleeps__UserID__1BC821DD" FromRole="Users" ToRole="Sleeps" />
-          <NavigationProperty Name="Temperatures" Relationship="Self.FK__Temperatu__UserI__1CBC4616" FromRole="Users" ToRole="Temperatures" />
-          <NavigationProperty Name="Weights" Relationship="Self.FK__Weights__UserID__1DB06A4F" FromRole="Users" ToRole="Weights" />
+          <Property Name="WeightGoal" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="FrequencyGoal" Type="Int32" />
+          <NavigationProperty Name="FrequencyOfRespiratoryMovements" Relationship="Self.FK__Frequency__UserI__32AB8735" FromRole="Users" ToRole="FrequencyOfRespiratoryMovements" />
+          <NavigationProperty Name="Glucoses" Relationship="Self.FK__Glucoses__UserID__30C33EC3" FromRole="Users" ToRole="Glucoses" />
+          <NavigationProperty Name="Liquids" Relationship="Self.FK__Liquids__UserID__2EDAF651" FromRole="Users" ToRole="Liquids" />
+          <NavigationProperty Name="Meals" Relationship="Self.FK__Meals__UserID__2DE6D218" FromRole="Users" ToRole="Meals" />
+          <NavigationProperty Name="Pulses" Relationship="Self.FK__Pulses__UserID__2FCF1A8A" FromRole="Users" ToRole="Pulses" />
+          <NavigationProperty Name="Temperatures" Relationship="Self.FK__Temperatu__UserI__31B762FC" FromRole="Users" ToRole="Temperatures" />
+          <NavigationProperty Name="Weights" Relationship="Self.FK__Weights__UserID__339FAB6E" FromRole="Users" ToRole="Weights" />
         </EntityType>
         <EntityType Name="Weights">
           <Key>
@@ -306,9 +300,21 @@
           <Property Name="UserID" Type="Int32" />
           <Property Name="BodyWeight" Type="Decimal" Precision="4" Scale="1" Nullable="false" />
           <Property Name="MeasurementTimeWeight" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="Users" Relationship="Self.FK__Weights__UserID__1DB06A4F" FromRole="Weights" ToRole="Users" />
+          <NavigationProperty Name="Users" Relationship="Self.FK__Weights__UserID__339FAB6E" FromRole="Weights" ToRole="Users" />
         </EntityType>
-        <Association Name="FK__Glucoses__UserID__1AD3FDA4">
+        <Association Name="FK__Frequency__UserI__32AB8735">
+          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+          <End Role="FrequencyOfRespiratoryMovements" Type="Self.FrequencyOfRespiratoryMovements" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="FrequencyOfRespiratoryMovements">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Glucoses__UserID__30C33EC3">
           <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
           <End Role="Glucoses" Type="Self.Glucoses" Multiplicity="*" />
           <ReferentialConstraint>
@@ -320,7 +326,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Liquids__UserID__18EBB532">
+        <Association Name="FK__Liquids__UserID__2EDAF651">
           <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
           <End Role="Liquids" Type="Self.Liquids" Multiplicity="*" />
           <ReferentialConstraint>
@@ -332,7 +338,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Meals__UserID__17F790F9">
+        <Association Name="FK__Meals__UserID__2DE6D218">
           <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
           <End Role="Meals" Type="Self.Meals" Multiplicity="*" />
           <ReferentialConstraint>
@@ -344,7 +350,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Pulses__UserID__19DFD96B">
+        <Association Name="FK__Pulses__UserID__2FCF1A8A">
           <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
           <End Role="Pulses" Type="Self.Pulses" Multiplicity="*" />
           <ReferentialConstraint>
@@ -356,19 +362,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Sleeps__UserID__1BC821DD">
-          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
-          <End Role="Sleeps" Type="Self.Sleeps" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Users">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="Sleeps">
-              <PropertyRef Name="UserID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__Temperatu__UserI__1CBC4616">
+        <Association Name="FK__Temperatu__UserI__31B762FC">
           <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
           <End Role="Temperatures" Type="Self.Temperatures" Multiplicity="*" />
           <ReferentialConstraint>
@@ -380,7 +374,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Weights__UserID__1DB06A4F">
+        <Association Name="FK__Weights__UserID__339FAB6E">
           <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
           <End Role="Weights" Type="Self.Weights" Multiplicity="*" />
           <ReferentialConstraint>
@@ -393,39 +387,39 @@
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="FitLogEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="FrequencyOfRespiratoryMovements" EntityType="Self.FrequencyOfRespiratoryMovements" />
           <EntitySet Name="Glucoses" EntityType="Self.Glucoses" />
           <EntitySet Name="Liquids" EntityType="Self.Liquids" />
           <EntitySet Name="Meals" EntityType="Self.Meals" />
           <EntitySet Name="Pulses" EntityType="Self.Pulses" />
-          <EntitySet Name="Sleeps" EntityType="Self.Sleeps" />
           <EntitySet Name="Temperatures" EntityType="Self.Temperatures" />
           <EntitySet Name="Users" EntityType="Self.Users" />
           <EntitySet Name="Weights" EntityType="Self.Weights" />
-          <AssociationSet Name="FK__Glucoses__UserID__1AD3FDA4" Association="Self.FK__Glucoses__UserID__1AD3FDA4">
+          <AssociationSet Name="FK__Frequency__UserI__32AB8735" Association="Self.FK__Frequency__UserI__32AB8735">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="FrequencyOfRespiratoryMovements" EntitySet="FrequencyOfRespiratoryMovements" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Glucoses__UserID__30C33EC3" Association="Self.FK__Glucoses__UserID__30C33EC3">
             <End Role="Users" EntitySet="Users" />
             <End Role="Glucoses" EntitySet="Glucoses" />
           </AssociationSet>
-          <AssociationSet Name="FK__Liquids__UserID__18EBB532" Association="Self.FK__Liquids__UserID__18EBB532">
+          <AssociationSet Name="FK__Liquids__UserID__2EDAF651" Association="Self.FK__Liquids__UserID__2EDAF651">
             <End Role="Users" EntitySet="Users" />
             <End Role="Liquids" EntitySet="Liquids" />
           </AssociationSet>
-          <AssociationSet Name="FK__Meals__UserID__17F790F9" Association="Self.FK__Meals__UserID__17F790F9">
+          <AssociationSet Name="FK__Meals__UserID__2DE6D218" Association="Self.FK__Meals__UserID__2DE6D218">
             <End Role="Users" EntitySet="Users" />
             <End Role="Meals" EntitySet="Meals" />
           </AssociationSet>
-          <AssociationSet Name="FK__Pulses__UserID__19DFD96B" Association="Self.FK__Pulses__UserID__19DFD96B">
+          <AssociationSet Name="FK__Pulses__UserID__2FCF1A8A" Association="Self.FK__Pulses__UserID__2FCF1A8A">
             <End Role="Users" EntitySet="Users" />
             <End Role="Pulses" EntitySet="Pulses" />
           </AssociationSet>
-          <AssociationSet Name="FK__Sleeps__UserID__1BC821DD" Association="Self.FK__Sleeps__UserID__1BC821DD">
-            <End Role="Users" EntitySet="Users" />
-            <End Role="Sleeps" EntitySet="Sleeps" />
-          </AssociationSet>
-          <AssociationSet Name="FK__Temperatu__UserI__1CBC4616" Association="Self.FK__Temperatu__UserI__1CBC4616">
+          <AssociationSet Name="FK__Temperatu__UserI__31B762FC" Association="Self.FK__Temperatu__UserI__31B762FC">
             <End Role="Users" EntitySet="Users" />
             <End Role="Temperatures" EntitySet="Temperatures" />
           </AssociationSet>
-          <AssociationSet Name="FK__Weights__UserID__1DB06A4F" Association="Self.FK__Weights__UserID__1DB06A4F">
+          <AssociationSet Name="FK__Weights__UserID__339FAB6E" Association="Self.FK__Weights__UserID__339FAB6E">
             <End Role="Users" EntitySet="Users" />
             <End Role="Weights" EntitySet="Weights" />
           </AssociationSet>
@@ -436,6 +430,16 @@
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="Хранилище FitLogModelContainer" CdmEntityContainer="FitLogEntities">
+          <EntitySetMapping Name="FrequencyOfRespiratoryMovements">
+            <EntityTypeMapping TypeName="FitLogModel.FrequencyOfRespiratoryMovements">
+              <MappingFragment StoreEntitySet="FrequencyOfRespiratoryMovements">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="Frequency" ColumnName="Frequency" />
+                <ScalarProperty Name="MeasurementTimeFrequency" ColumnName="MeasurementTimeFrequency" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Glucoses">
             <EntityTypeMapping TypeName="FitLogModel.Glucoses">
               <MappingFragment StoreEntitySet="Glucoses">
@@ -479,24 +483,11 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Sleeps">
-            <EntityTypeMapping TypeName="FitLogModel.Sleeps">
-              <MappingFragment StoreEntitySet="Sleeps">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="UserID" ColumnName="UserID" />
-                <ScalarProperty Name="BedTime" ColumnName="BedTime" />
-                <ScalarProperty Name="WakeUpTime" ColumnName="WakeUpTime" />
-                <ScalarProperty Name="SleepTime" ColumnName="SleepTime" />
-                <ScalarProperty Name="HoursOfSleep" ColumnName="HoursOfSleep" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Temperatures">
             <EntityTypeMapping TypeName="FitLogModel.Temperatures">
               <MappingFragment StoreEntitySet="Temperatures">
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="UserID" ColumnName="UserID" />
-                <ScalarProperty Name="MeasurementPlace" ColumnName="MeasurementPlace" />
                 <ScalarProperty Name="BodyTemperature" ColumnName="BodyTemperature" />
                 <ScalarProperty Name="MeasurementTimeTemperature" ColumnName="MeasurementTimeTemperature" />
               </MappingFragment>
@@ -511,7 +502,7 @@
                 <ScalarProperty Name="FoodGoal" ColumnName="FoodGoal" />
                 <ScalarProperty Name="LiquidGoal" ColumnName="LiquidGoal" />
                 <ScalarProperty Name="WeightGoal" ColumnName="WeightGoal" />
-                <ScalarProperty Name="SleepGoal" ColumnName="SleepGoal" />
+                <ScalarProperty Name="FrequencyGoal" ColumnName="FrequencyGoal" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

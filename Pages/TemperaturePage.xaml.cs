@@ -1,30 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Diagnostics;
+﻿using FitLog.ClearFields;
+using FitLog.Controls;
 using FitLog.Entities;
-using static FitLog.DateClass.DateInfo;
-using System.ComponentModel;
-using System.IO;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
-using OfficeOpenXml.Drawing.Chart;
-using Syncfusion.DocIO;
 using Syncfusion.DocIO.DLS;
-using Syncfusion.Drawing;
-using OfficeOpenXml.Packaging.Ionic.Zlib;
-using Syncfusion.UI.Xaml.Charts;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using static FitLog.Controls.CustomMessageBox;
 
 namespace FitLog.Pages
 {
@@ -41,10 +30,7 @@ namespace FitLog.Pages
         public List<string> Period { get; set; }
         public List<string> Place { get; set; }
 
-        private List<string> _place = new List<string>
-        {
-            "Не указано", "Подмышка", "Лоб", "Запястье", "Височная артерия"
-        };
+
         private List<string> period = new List<string>
         {
             "Сегодня", "Неделя"
@@ -53,9 +39,8 @@ namespace FitLog.Pages
         public TemperaturePage(Users user)
         {
             InitializeComponent();
-            Place = _place;
             Period = period;
-            PlaceComboBox.SelectedIndex = 0;
+
             _currentUser = user;
             ChartUpdateTemperature();
             PeriodComboBox.SelectedIndex = 0;
@@ -88,7 +73,7 @@ namespace FitLog.Pages
         {
             ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
             string downloadsPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads";
-            string fileName = $"TemperatureOutput_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.xlsx"; // Добавляем временный штамп к имени файла
+            string fileName = $"TemperatureOutput_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.xlsx";
             string filePath = System.IO.Path.Combine(downloadsPath, fileName);
 
             FileInfo fileInfo = new FileInfo(filePath);
@@ -97,13 +82,13 @@ namespace FitLog.Pages
             {
                 ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("TemperatureData");
 
-                // Добавляем заголовки
+                
                 worksheet.Cells[1, 1].Value = "Момент занесения";
                 worksheet.Cells[1, 2].Value = "Температура";
 
-                if (temperatures.Any()) // Проверяем, есть ли данные
+                if (temperatures.Any()) 
                 {
-                    // Добавляем данные
+                    
                     int row = 2;
                     foreach (var temperature in temperatures)
                     {
@@ -113,12 +98,12 @@ namespace FitLog.Pages
                         row++;
                     }
 
-                    // Устанавливаем формат для времени
+                    
                     worksheet.Column(1).Style.Numberformat.Format = "hh:mm:ss dd-mm-yyyy";
                     worksheet.Cells[1, 1, 1, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                     worksheet.Cells[1, 1, 1, 2].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 
-                    // Устанавливаем выравнивание для данных
+                    
                     worksheet.Cells[2, 1, row - 1, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                     worksheet.Cells[2, 1, row - 1, 1].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                     worksheet.Cells[2, 3, row - 1, 4].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
@@ -129,10 +114,45 @@ namespace FitLog.Pages
                 // Автоподбор ширины столбцов
                 worksheet.Cells.AutoFitColumns();
 
-                // Сохраняем изменения
+                
                 package.Save();
             }
-            MessageBox.Show($"Файл сохранен в папке \"Загрузки\": {filePath}", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+            CustomMessageBox.Show($"Файл сохранен в папке \"Загрузки\": {filePath}", "Успех", MessageWindowImage.Information, MessageWindowButton.Ok);
+        }
+
+        private void NumericAndCommaTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            string currentText = textBox.Text;
+            string newText = currentText.Insert(textBox.CaretIndex, e.Text);
+
+            // Разрешить только цифры и запятую
+            if (!char.IsDigit(e.Text, 0) && e.Text != ",")
+            {
+                e.Handled = true;
+                return;
+            }
+
+            // Запрет на ввод запятой первым символом
+            if (newText.StartsWith(","))
+            {
+                e.Handled = true;
+                return;
+            }
+
+            // Запрет на ввод запятой последним символом
+            if (newText.EndsWith(",") && newText.Count(c => c == ',') > 1)
+            {
+                e.Handled = true;
+                return;
+            }
+
+            // Запрет на ввод второй запятой
+            if (newText.Count(c => c == ',') > 1)
+            {
+                e.Handled = true;
+                return;
+            }
         }
 
         private void ButtonExportToExcelTemperature_Click(object sender, RoutedEventArgs e)
@@ -152,15 +172,15 @@ namespace FitLog.Pages
 
                     });
                 }
-
+                temperatures = temperatures.OrderBy(l => l.MeasurementTimeTemperature).ToList();
                 ExportToExcelTemperature(temperatures);
             }
             else if (PeriodComboBox.SelectedValue.ToString() == "Неделя")
             {
-                // Начальная дата - 6 дней назад от текущего дня
+                
                 var startDate = DateTime.Now.Date.AddDays(-6);
 
-                // Конечная дата - текущий момент
+               
                 var endDate = DateTime.Now;
 
                 var info = DatabaseContext.DbContext.Context.Temperatures.ToList()
@@ -176,7 +196,7 @@ namespace FitLog.Pages
 
                     });
                 }
-
+                temperatures = temperatures.OrderBy(l => l.MeasurementTimeTemperature).ToList();
                 ExportToExcelTemperature(temperatures);
             }
 
@@ -184,29 +204,29 @@ namespace FitLog.Pages
 
         public static void ExportToWordTemperature(List<Temperatures> temperatures)
         {
-            // Создаем новый документ Word
+            
             using (WordDocument document = new WordDocument())
             {
-                // Добавляем раздел с заголовком
+                
                 WSection section = document.AddSection() as WSection;
                 WParagraph paragraph = section.HeadersFooters.Header.AddParagraph() as WParagraph;
                 paragraph.AppendText("Temperature Data").CharacterFormat.FontSize = 14;
                 paragraph.ParagraphFormat.HorizontalAlignment = Syncfusion.DocIO.DLS.HorizontalAlignment.Center;
 
-                // Добавляем таблицу
+                
                 WTable table = section.AddTable() as WTable;
-                table.ResetCells(temperatures.Count + 1, 2); // +1 для заголовков
+                table.ResetCells(temperatures.Count + 1, 2); 
 
-                // Добавляем заголовки таблицы
+               
                 string[] headers = { "Момент занесения", "Температура" };
                 for (int i = 0; i < headers.Length; i++)
                 {
                     table[0, i].AddParagraph().AppendText(headers[i]);
                     table[0, i].CellFormat.VerticalAlignment = Syncfusion.DocIO.DLS.VerticalAlignment.Middle;
-                    //table[0, i].CellFormat.HorizontalAlignment = Syncfusion.DocIO.DLS.HorizontalAlignment.Center;
+                   
                 }
 
-                // Добавляем данные в таблицу
+                
                 for (int i = 0; i < temperatures.Count; i++)
                 {
                     Temperatures temperature = temperatures[i];
@@ -214,7 +234,7 @@ namespace FitLog.Pages
                     table[i + 1, 1].AddParagraph().AppendText(temperature.BodyTemperature.ToString());
                 }
 
-                // Устанавливаем форматирование для таблицы
+                
                 foreach (WTableRow row in table.Rows)
                 {
                     foreach (WTableCell cell in row.Cells)
@@ -226,13 +246,13 @@ namespace FitLog.Pages
                     }
                 }
 
-                // Сохраняем документ
+                
                 string downloadsPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads";
                 string fileName = $"TemperatureOutput_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.docx";
                 string filePath = System.IO.Path.Combine(downloadsPath, fileName);
                 document.Save(filePath);
 
-                MessageBox.Show($"Файл сохранен в папке \"Загрузки\": {filePath}", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                CustomMessageBox.Show($"Файл сохранен в папке \"Загрузки\": {filePath}", "Успех", MessageWindowImage.Information, MessageWindowButton.Ok);
             }
         }
 
@@ -253,15 +273,15 @@ namespace FitLog.Pages
 
                     });
                 }
-
+                temperatures = temperatures.OrderBy(l => l.MeasurementTimeTemperature).ToList();
                 ExportToWordTemperature(temperatures);
             }
             else if (PeriodComboBox.SelectedValue.ToString() == "Неделя")
             {
-                // Начальная дата - 6 дней назад от текущего дня
+                
                 var startDate = DateTime.Now.Date.AddDays(-6);
 
-                // Конечная дата - текущий момент
+                
                 var endDate = DateTime.Now;
 
                 var info = DatabaseContext.DbContext.Context.Temperatures.ToList()
@@ -277,7 +297,7 @@ namespace FitLog.Pages
 
                     });
                 }
-
+                temperatures = temperatures.OrderBy(l => l.MeasurementTimeTemperature).ToList();
                 ExportToWordTemperature(temperatures);
             }
 
@@ -286,16 +306,31 @@ namespace FitLog.Pages
 
         public void SaveTemperature()
         {
+            DateTime today = DateTime.Today;
 
-            if (string.IsNullOrWhiteSpace(TemperatureTextBox.Text))
+            var newTemperatureTime = TemperatureTimeDateTimePicker.Value;
+            decimal temperatureConsumed;
+            if (!decimal.TryParse(TemperatureTextBox.Text, out temperatureConsumed))
             {
-                MessageBox.Show("Пожалуйста, введите температуру тела");
+                CustomMessageBox.Show("Некорректное значение для температуры тела", "Внимание", MessageWindowImage.Warning, MessageWindowButton.Ok);
+                return;
+            }
+
+            if (newTemperatureTime == default)
+            {
+                CustomMessageBox.Show("Пожалуйста, заполните временной интервал", "Внимание", MessageWindowImage.Warning, MessageWindowButton.Ok);
+                return;
+            }
+
+            if (newTemperatureTime.Value.Date > today)
+            {
+                CustomMessageBox.Show("Нельзя вводить данные на будущие даты", "Внимание", MessageWindowImage.Warning, MessageWindowButton.Ok);
                 return;
             }
 
             if (Convert.ToDecimal(TemperatureTextBox.Text) > 42 || Convert.ToDecimal(TemperatureTextBox.Text) < 0)
             {
-                MessageBox.Show("Человек не может иметь такую температуру");
+                CustomMessageBox.Show("Человек не может иметь такую температуру", "Внимание", MessageWindowImage.Warning, MessageWindowButton.Ok);
                 return;
             }
 
@@ -304,14 +339,27 @@ namespace FitLog.Pages
                 UserID = _currentUser.ID,
                 BodyTemperature = Convert.ToDecimal(TemperatureTextBox.Text),
                 MeasurementTimeTemperature = TemperatureTimeDateTimePicker.Value,
-                MeasurementPlace = PlaceComboBox.SelectedItem?.ToString()
             });
 
             DatabaseContext.DbContext.Context.SaveChanges();
 
-            //ClearField.ClearTextBoxes(this);
+            TemperatureTimeDateTimePicker.Text = "";
+            ClearField.ClearTextBoxes(this);
 
-            PlaceComboBox.SelectedIndex = 0;
+        }
+
+        private void OpenFirstLink(object sender, RoutedEventArgs e)
+        {
+            string url = "https://65.mchs.gov.ru/deyatelnost/press-centr/novosti/4523467";
+
+            Process.Start(url);
+        }
+
+        private void OpenSecondLink(object sender, RoutedEventArgs e)
+        {
+            string url = "https://www.medicina.ru/press-tsentr/statyi/chto-delat-pri-povyshenii-temperatury/";
+
+            Process.Start(url);
         }
 
         private void ButtonSaveTemperature_Click(object sender, RoutedEventArgs e)
@@ -323,7 +371,7 @@ namespace FitLog.Pages
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при сохранении данных: {ex.Message}");
+                CustomMessageBox.Show($"Ошибка при сохранении данных: {ex.Message}", "Ошибка", MessageWindowImage.Error, MessageWindowButton.Ok);
             }
         }
     }

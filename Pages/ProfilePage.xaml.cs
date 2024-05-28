@@ -1,25 +1,17 @@
-﻿using FitLog.Entities;
+﻿using FitLog.Controls;
+using FitLog.Entities;
+using MimeKit;
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Net;
-using System.Net.Mail;
-using MimeKit;
-using MailKit.Net.Smtp;
+using static FitLog.Controls.CustomMessageBox;
 
 namespace FitLog.Pages
 {
@@ -30,10 +22,13 @@ namespace FitLog.Pages
         private Timer _foodGoalTimer;
         private Timer _liquidGoalTimer;
         private Timer _weightGoalTimer;
-        private Timer _sleepGoalTimer;
+        private Timer _frequencyGoalTimer;
         private bool _isGoalChanged = false;
 
         public ObservableCollection<string> SelectedFiles { get; set; } = new ObservableCollection<string>();
+
+        public const string email = "fitlog05@mail.ru";
+        public const string password = "i3twPDH2aUTkuf7kkP30";
 
 
         public ProfilePage(Users user)
@@ -57,16 +52,16 @@ namespace FitLog.Pages
             _weightGoalTimer.AutoReset = false;
             _weightGoalTimer.Elapsed += WeightGoalTimerElapsed;
 
-            _sleepGoalTimer = new Timer();
-            _sleepGoalTimer.Interval = 2000;
-            _sleepGoalTimer.AutoReset = false;
-            _sleepGoalTimer.Elapsed += SleepGoalTimerElapsed;
+            _frequencyGoalTimer = new Timer();
+            _frequencyGoalTimer.Interval = 2000;
+            _frequencyGoalTimer.AutoReset = false;
+            _frequencyGoalTimer.Elapsed += FrequencyGoalTimerElapsed;
 
             // Загрузка целей пользователя при загрузке страницы
             LoadUserFoodGoals();
             LoadUserLiquidGoals();
             LoadUserWeightGoals();
-            LoadUserSleepGoals();
+            LoadUserFrequencyGoals();
 
             DataContext = this;
 
@@ -86,10 +81,9 @@ namespace FitLog.Pages
 
         private void LoadUserLiquidGoals()
         {
-            // Загрузить цели пользователя из базы данных
+            
             _currentUser = DatabaseContext.DbContext.Context.Users.FirstOrDefault(u => u.ID == _currentUser.ID);
 
-            // Отобразить загруженные цели на странице
             if (_currentUser != null)
             {
                 LiquidGoalTextBox.Text = _currentUser.LiquidGoal.ToString();
@@ -98,25 +92,22 @@ namespace FitLog.Pages
 
         private void LoadUserWeightGoals()
         {
-            // Загрузить цели пользователя из базы данных
+            
             _currentUser = DatabaseContext.DbContext.Context.Users.FirstOrDefault(u => u.ID == _currentUser.ID);
 
-            // Отобразить загруженные цели на странице
             if (_currentUser != null)
             {
                 WeightGoalTextBox.Text = _currentUser.WeightGoal.ToString();
             }
         }
 
-        private void LoadUserSleepGoals()
+        private void LoadUserFrequencyGoals()
         {
-            // Загрузить цели пользователя из базы данных
             _currentUser = DatabaseContext.DbContext.Context.Users.FirstOrDefault(u => u.ID == _currentUser.ID);
 
-            // Отобразить загруженные цели на странице
             if (_currentUser != null)
             {
-                SleepGoalTextBox.Text = _currentUser.SleepGoal.ToString();
+                FrequencyGoalTextBox.Text = _currentUser.FrequencyGoal.ToString();
             }
         }
 
@@ -126,27 +117,83 @@ namespace FitLog.Pages
             {
                 if (string.IsNullOrWhiteSpace(FoodGoalTextBox.Text))
                 {
-                    FoodGoalTextBox.Text = "0"; // Если строка пуста, присваиваем значение 0
+                    FoodGoalTextBox.Text = "0";
                 }
 
-                var newFoodGoal = Convert.ToInt32(FoodGoalTextBox.Text);
-                if (_currentUser.FoodGoal != newFoodGoal)
+                if (int.TryParse(FoodGoalTextBox.Text, out int foodGoalValue))
                 {
-                    // Обновить цель пользователя в базе данных
-                    var userToUpdate = DatabaseContext.DbContext.Context.Users.FirstOrDefault(u => u.ID == _currentUser.ID);
-                    if (userToUpdate != null)
+                    if (foodGoalValue > 9999 || foodGoalValue < 0)
                     {
-                        userToUpdate.FoodGoal = newFoodGoal;
-                        DatabaseContext.DbContext.Context.SaveChanges();
-                        MessageBox.Show("Цель по питанию успешно обновлена.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                        CustomMessageBox.Show("Ограничение от 0 до 9999 килокалорий", "Внимание", MessageWindowImage.Warning, MessageWindowButton.Ok);
+                        return;
                     }
-                    else
+
+                    var newFoodGoal = (int)foodGoalValue; 
+                    if (_currentUser.FoodGoal != newFoodGoal)
                     {
-                        MessageBox.Show("Не удалось найти пользователя для обновления цели.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        var userToUpdate = DatabaseContext.DbContext.Context.Users.FirstOrDefault(u => u.ID == _currentUser.ID);
+                        if (userToUpdate != null)
+                        {
+                            userToUpdate.FoodGoal = newFoodGoal;
+                            DatabaseContext.DbContext.Context.SaveChanges();
+                            CustomMessageBox.Show("Цель по питанию успешно обновлена", "Успех", MessageWindowImage.Information, MessageWindowButton.Ok);
+                        }
+                        else
+                        {
+                            CustomMessageBox.Show("Не удалось найти пользователя для обновления цели", "Внимание", MessageWindowImage.Error, MessageWindowButton.Ok);
+                        }
                     }
+                }
+                else
+                {
+                    CustomMessageBox.Show("Пожалуйста, введите корректное числовое значение по питанию", "Ошибка", MessageWindowImage.Error, MessageWindowButton.Ok);
                 }
 
                 _isGoalChanged = false; // Сбрасываем флаг изменения цели
+            }
+
+        }
+
+        private void NumericTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            // Проверка на цифру
+            Regex regex = new Regex("^[0-9]+$");
+            
+            e.Handled = !regex.IsMatch(e.Text);
+        }
+
+        private void NumericAndCommaTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            string currentText = textBox.Text;
+            string newText = currentText.Insert(textBox.CaretIndex, e.Text);
+
+            // Разрешить только цифры и запятую
+            if (!char.IsDigit(e.Text, 0) && e.Text != ",")
+            {
+                e.Handled = true;
+                return;
+            }
+
+            // Запрет на ввод запятой первым символом
+            if (newText.StartsWith(","))
+            {
+                e.Handled = true;
+                return;
+            }
+
+            // Запрет на ввод запятой последним символом
+            if (newText.EndsWith(",") && newText.Count(c => c == ',') > 1)
+            {
+                e.Handled = true;
+                return;
+            }
+
+            // Запрет на ввод второй запятой
+            if (newText.Count(c => c == ',') > 1)
+            {
+                e.Handled = true;
+                return;
             }
         }
 
@@ -156,28 +203,41 @@ namespace FitLog.Pages
             {
                 if (string.IsNullOrWhiteSpace(LiquidGoalTextBox.Text))
                 {
-                    LiquidGoalTextBox.Text = "0"; // Если строка пуста, присваиваем значение 0
+                    LiquidGoalTextBox.Text = "0";
                 }
 
-                var newLiquidGoal = Convert.ToInt32(LiquidGoalTextBox.Text);
-                if (_currentUser.LiquidGoal != newLiquidGoal)
+                if (int.TryParse(LiquidGoalTextBox.Text, out int liquidGoalValue))
                 {
-                    // Обновить цель пользователя в базе данных
-                    var userToUpdate = DatabaseContext.DbContext.Context.Users.FirstOrDefault(u => u.ID == _currentUser.ID);
-                    if (userToUpdate != null)
+                    if (liquidGoalValue > 9999 || liquidGoalValue < 0)
                     {
-                        userToUpdate.LiquidGoal = newLiquidGoal;
-                        DatabaseContext.DbContext.Context.SaveChanges();
-                        MessageBox.Show("Цель по жидкости успешно обновлена.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                        CustomMessageBox.Show("Ограничение в 9999 миллилитров", "Внимание", MessageWindowImage.Warning, MessageWindowButton.Ok);
+                        return;
                     }
-                    else
+
+                    var newLiquidGoal = (int)liquidGoalValue; 
+                    if (_currentUser.LiquidGoal != newLiquidGoal)
                     {
-                        MessageBox.Show("Не удалось найти пользователя для обновления цели.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        var userToUpdate = DatabaseContext.DbContext.Context.Users.FirstOrDefault(u => u.ID == _currentUser.ID);
+                        if (userToUpdate != null)
+                        {
+                            userToUpdate.LiquidGoal = newLiquidGoal;
+                            DatabaseContext.DbContext.Context.SaveChanges();
+                            CustomMessageBox.Show("Цель по жидкости успешно обновлена", "Успех", MessageWindowImage.Information, MessageWindowButton.Ok);
+                        }
+                        else
+                        {
+                            CustomMessageBox.Show("Не удалось найти пользователя для обновления цели", "Внимание", MessageWindowImage.Error, MessageWindowButton.Ok);
+                        }
                     }
+                }
+                else
+                {
+                    CustomMessageBox.Show("Пожалуйста, введите корректное числовое значение по жидкости", "Ошибка", MessageWindowImage.Error, MessageWindowButton.Ok);
                 }
 
                 _isGoalChanged = false; // Сбрасываем флаг изменения цели
             }
+
         }
 
         private void UpdateUserWeightGoals()
@@ -186,58 +246,84 @@ namespace FitLog.Pages
             {
                 if (string.IsNullOrWhiteSpace(WeightGoalTextBox.Text))
                 {
-                    WeightGoalTextBox.Text = "0"; // Если строка пуста, присваиваем значение 0
+                    WeightGoalTextBox.Text = "0";
                 }
 
-                var newWeightGoal = Convert.ToInt32(WeightGoalTextBox.Text);
-                if (_currentUser.WeightGoal != newWeightGoal)
+                if (decimal.TryParse(WeightGoalTextBox.Text, out decimal weightGoalValue))
                 {
-                    // Обновить цель пользователя в базе данных
-                    var userToUpdate = DatabaseContext.DbContext.Context.Users.FirstOrDefault(u => u.ID == _currentUser.ID);
-                    if (userToUpdate != null)
+                    if (weightGoalValue > 650 || weightGoalValue < 10)
                     {
-                        userToUpdate.WeightGoal = newWeightGoal;
-                        DatabaseContext.DbContext.Context.SaveChanges();
-                        MessageBox.Show("Цель по весу успешно обновлена.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                        CustomMessageBox.Show("Человек не может иметь такой вес", "Внимание", MessageWindowImage.Warning, MessageWindowButton.Ok);
+                        return;
                     }
-                    else
+
+                    var newWeightGoal = weightGoalValue;
+                    if (_currentUser.WeightGoal != newWeightGoal)
                     {
-                        MessageBox.Show("Не удалось найти пользователя для обновления цели.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        var userToUpdate = DatabaseContext.DbContext.Context.Users.FirstOrDefault(u => u.ID == _currentUser.ID);
+                        if (userToUpdate != null)
+                        {
+                            userToUpdate.WeightGoal = newWeightGoal;
+                            DatabaseContext.DbContext.Context.SaveChanges();
+                            CustomMessageBox.Show("Цель по весу успешно обновлена", "Успех", MessageWindowImage.Information, MessageWindowButton.Ok);
+                        }
+                        else
+                        {
+                            CustomMessageBox.Show("Не удалось найти пользователя для обновления цели", "Внимание", MessageWindowImage.Error, MessageWindowButton.Ok);
+                        }
                     }
+                }
+                else
+                {
+                    CustomMessageBox.Show("Пожалуйста, введите корректное числовое значение по весу", "Ошибка", MessageWindowImage.Error, MessageWindowButton.Ok);
                 }
 
                 _isGoalChanged = false; // Сбрасываем флаг изменения цели
             }
+
         }
 
-        private void UpdateUserSleepGoals()
+        private void UpdateUserFrequencyGoals()
         {
             if (_isGoalChanged)
             {
-                if (string.IsNullOrWhiteSpace(SleepGoalTextBox.Text))
+                if (string.IsNullOrWhiteSpace(FrequencyGoalTextBox.Text))
                 {
-                    SleepGoalTextBox.Text = "0"; // Если строка пуста, присваиваем значение 0
+                    FrequencyGoalTextBox.Text = "0";
                 }
 
-                var newSleepGoal = Convert.ToInt32(SleepGoalTextBox.Text);
-                if (_currentUser.SleepGoal != newSleepGoal)
+                if (int.TryParse(FrequencyGoalTextBox.Text, out int frequencyGoalValue))
                 {
-                    // Обновить цель пользователя в базе данных
-                    var userToUpdate = DatabaseContext.DbContext.Context.Users.FirstOrDefault(u => u.ID == _currentUser.ID);
-                    if (userToUpdate != null)
+                    if (frequencyGoalValue > 60 || frequencyGoalValue < 5)
                     {
-                        userToUpdate.SleepGoal = newSleepGoal;
-                        DatabaseContext.DbContext.Context.SaveChanges();
-                        MessageBox.Show("Цель по сну успешно обновлена.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                        CustomMessageBox.Show("Человек не может иметь такой показатель частоты дыхания", "Внимание", MessageWindowImage.Warning, MessageWindowButton.Ok);
+                        return;
                     }
-                    else
+
+                    var newFrequencyGoal = frequencyGoalValue; 
+                    if (_currentUser.FrequencyGoal != newFrequencyGoal)
                     {
-                        MessageBox.Show("Не удалось найти пользователя для обновления цели.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        var userToUpdate = DatabaseContext.DbContext.Context.Users.FirstOrDefault(u => u.ID == _currentUser.ID);
+                        if (userToUpdate != null)
+                        {
+                            userToUpdate.FrequencyGoal = newFrequencyGoal;
+                            DatabaseContext.DbContext.Context.SaveChanges();
+                            CustomMessageBox.Show("Цель по дыханию успешно обновлена", "Успех", MessageWindowImage.Information, MessageWindowButton.Ok);
+                        }
+                        else
+                        {
+                            CustomMessageBox.Show("Не удалось найти пользователя для обновления цели", "Внимание", MessageWindowImage.Error, MessageWindowButton.Ok);
+                        }
                     }
+                }
+                else
+                {
+                    CustomMessageBox.Show("Пожалуйста, введите корректное числовое значение по частоте дыхательных движений", "Ошибка", MessageWindowImage.Error, MessageWindowButton.Ok);
                 }
 
                 _isGoalChanged = false; // Сбрасываем флаг изменения цели
             }
+
         }
 
         private void FoodGoalTextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -252,7 +338,6 @@ namespace FitLog.Pages
         private void LiquidGoalTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             _isGoalChanged = true;
-            // Сбрасываем таймер и запускаем его заново
             _liquidGoalTimer.Stop();
             _liquidGoalTimer.Start();
         }
@@ -260,17 +345,15 @@ namespace FitLog.Pages
         private void WeightGoalTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             _isGoalChanged = true;
-            // Сбрасываем таймер и запускаем его заново
             _weightGoalTimer.Stop();
             _weightGoalTimer.Start();
         }
 
-        private void SleepGoalTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        private void FrequencyGoalTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             _isGoalChanged = true;
-            // Сбрасываем таймер и запускаем его заново
-            _sleepGoalTimer.Stop();
-            _sleepGoalTimer.Start();
+            _frequencyGoalTimer.Stop();
+            _frequencyGoalTimer.Start();
         }
 
         // Обработчик события таймера
@@ -289,35 +372,77 @@ namespace FitLog.Pages
             Dispatcher.Invoke(() => UpdateUserWeightGoals());
         }
 
-        private void SleepGoalTimerElapsed(object sender, ElapsedEventArgs e)
+        private void FrequencyGoalTimerElapsed(object sender, ElapsedEventArgs e)
         {
-            Dispatcher.Invoke(() => UpdateUserSleepGoals());
+            Dispatcher.Invoke(() => UpdateUserFrequencyGoals());
         }
 
-        // Обработчик клика по кнопке "Выбрать файл"
+
         private void SelectFile_Click(object sender, RoutedEventArgs e)
         {
             var openFileDialog = new Microsoft.Win32.OpenFileDialog();
             if (openFileDialog.ShowDialog() == true)
             {
-                string fileName = openFileDialog.FileName;
-                SelectedFiles.Add(fileName);
+                AddFile(openFileDialog.FileName);
             }
         }
 
-        // Обработчик клика по кнопке "Отправить почту"
+        private const int MaxFileSize = 7 * 1024 * 1024;
+        private readonly string[] AllowedExtensions = { ".xls", ".xlsx", ".doc", ".docx", ".pdf" };
+
+        private void AddFile(string filePath)
+        {
+            FileInfo fileInfo = new FileInfo(filePath);
+            if (fileInfo.Length > MaxFileSize)
+            {
+                CustomMessageBox.Show($"Файл {fileInfo.Name} превышает максимальный размер 3 МБ!", "Ошибка", MessageWindowImage.Error, MessageWindowButton.Ok);
+                return;
+            }
+
+            string fileExtension = fileInfo.Extension.ToLower();
+            if (!AllowedExtensions.Contains(fileExtension))
+            {
+                CustomMessageBox.Show($"Файл {fileInfo.Name} имеет недопустимое расширение! Разрешены только файлы с расширением: {string.Join(", ", AllowedExtensions)}", "Ошибка", MessageWindowImage.Error, MessageWindowButton.Ok);
+                return;
+            }
+
+            SelectedFiles.Add(filePath);
+        }
+
+        private void SelectedFilesListBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Delete)
+            {
+                var listBox = sender as ListBox;
+                if (listBox != null && listBox.SelectedItem != null)
+                {
+                    var selectedFile = listBox.SelectedItem as string;
+                    if (selectedFile != null)
+                    {
+                        SelectedFiles.Remove(selectedFile);
+                    }
+                }
+            }
+        }
+
         private void SendEmail_Click(object sender, RoutedEventArgs e)
         {
             string recipient = RecipientTextBox.Text;
             if (string.IsNullOrWhiteSpace(recipient))
             {
-                MessageBox.Show("Введите адрес получателя!");
+                CustomMessageBox.Show("Введите адрес получателя!", "Внимание", MessageWindowImage.Warning, MessageWindowButton.Ok);
                 return;
             }
 
             if (SelectedFiles.Count == 0)
             {
-                MessageBox.Show("Выберите хотя бы один файл!");
+                CustomMessageBox.Show("Выберите хотя бы один файл!", "Внимание", MessageWindowImage.Warning, MessageWindowButton.Ok);
+                return;
+            }
+
+            if (SelectedFiles.Count > 3)
+            {
+                CustomMessageBox.Show("Максимальное количество файлов - 3!", "Внимание", MessageWindowImage.Warning, MessageWindowButton.Ok);
                 return;
             }
 
@@ -326,13 +451,11 @@ namespace FitLog.Pages
                 using (var client = new MailKit.Net.Smtp.SmtpClient())
                 {
                     client.Connect("smtp.mail.ru", 587, false);
-                    client.Authenticate("dmitry13890@mail.ru", "MCwzVQQXHdeNC5HVS7bf");
+                    client.Authenticate(email, password);
 
                     var message = new MimeMessage();
-                    message.From.Add(MailboxAddress.Parse("dmitry13890@mail.ru"));
-
+                    message.From.Add(MailboxAddress.Parse(email));
                     message.To.Add(MailboxAddress.Parse(recipient));
-
                     message.Subject = "Отправка документа от FitLog";
 
                     var builder = new BodyBuilder();
@@ -344,17 +467,45 @@ namespace FitLog.Pages
                     }
 
                     message.Body = builder.ToMessageBody();
-
                     client.Send(message);
                     client.Disconnect(true);
                 }
-
-                MessageBox.Show("Почта успешно отправлена!");
+                CustomMessageBox.Show("Сообщение успешно отправлено!", "Успех", MessageWindowImage.Information, MessageWindowButton.Ok);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при отправке почты: {ex.Message}");
+                CustomMessageBox.Show($"Ошибка при отправке почты: {ex.Message}", "Ошибка", MessageWindowImage.Error, MessageWindowButton.Ok);
             }
+        }
+
+
+        private void OpenGithub(object sender, RoutedEventArgs e)
+        {
+            string url = "https://github.com/5LU6E4KA/FitLog";
+
+            Process.Start(url);
+        }
+
+        private void OpenTelegram(object sender, RoutedEventArgs e)
+        {
+            string url = "https://t.me/Dmitry13890";
+
+            var psi = new ProcessStartInfo
+            {
+                FileName = url,
+                UseShellExecute = true
+            };
+
+            Process.Start(psi);
+        }
+
+        private void OpenGmail(object sender, RoutedEventArgs e)
+        {
+            string email = "vitalevd.2004@gmail.com";
+            string gmailUrl = $"https://mail.google.com/mail/?view=cm&fs=1&to={email}";
+
+            Process.Start(new ProcessStartInfo(gmailUrl) { UseShellExecute = true });
+
         }
 
     }

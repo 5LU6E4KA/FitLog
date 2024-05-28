@@ -1,29 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Diagnostics;
+﻿using FitLog.ClearFields;
+using FitLog.Controls;
 using FitLog.Entities;
-using static FitLog.DateClass.DateInfo;
-using System.ComponentModel;
-using System.IO;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
-using OfficeOpenXml.Drawing.Chart;
-using Syncfusion.DocIO;
 using Syncfusion.DocIO.DLS;
-using Syncfusion.Drawing;
-using OfficeOpenXml.Packaging.Ionic.Zlib;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using static FitLog.Controls.CustomMessageBox;
 
 namespace FitLog.Pages
 {
@@ -77,7 +67,7 @@ namespace FitLog.Pages
         {
             ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
             string downloadsPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads";
-            string fileName = $"PulseOutput_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.xlsx"; // Добавляем временный штамп к имени файла
+            string fileName = $"PulseOutput_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.xlsx";
             string filePath = System.IO.Path.Combine(downloadsPath, fileName);
 
             FileInfo fileInfo = new FileInfo(filePath);
@@ -86,28 +76,28 @@ namespace FitLog.Pages
             {
                 ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("PulseData");
 
-                // Добавляем заголовки
+                
                 worksheet.Cells[1, 1].Value = "Момент занесения";
                 worksheet.Cells[1, 2].Value = "Пульс";
 
-                if (pulses.Any()) // Проверяем, есть ли данные
+                if (pulses.Any())
                 {
-                    // Добавляем данные
+                  
                     int row = 2;
                     foreach (var pulse in pulses)
                     {
                         worksheet.Cells[row, 1].Value = pulse.MeasurementTimePulse;
                         worksheet.Cells[row, 2].Value = pulse.FrequencyOfContractions;
-                        
+
                         row++;
                     }
 
-                    // Устанавливаем формат для времени
+                    
                     worksheet.Column(1).Style.Numberformat.Format = "hh:mm:ss dd-mm-yyyy";
                     worksheet.Cells[1, 1, 1, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                     worksheet.Cells[1, 1, 1, 2].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
 
-                    // Устанавливаем выравнивание для данных
+                   
                     worksheet.Cells[2, 1, row - 1, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                     worksheet.Cells[2, 1, row - 1, 1].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                     worksheet.Cells[2, 3, row - 1, 4].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
@@ -115,13 +105,21 @@ namespace FitLog.Pages
 
                 }
 
-                // Автоподбор ширины столбцов
+                
                 worksheet.Cells.AutoFitColumns();
 
-                // Сохраняем изменения
+               
                 package.Save();
             }
-            MessageBox.Show($"Файл сохранен в папке \"Загрузки\": {filePath}", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+            CustomMessageBox.Show($"Файл сохранен в папке \"Загрузки\": {filePath}", "Успех", MessageWindowImage.Information, MessageWindowButton.Ok);
+        }
+
+        private void NumericTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            
+            Regex regex = new Regex("^[0-9]+$");
+
+            e.Handled = !regex.IsMatch(e.Text);
         }
 
         private void ButtonExportToExcelPulse_Click(object sender, RoutedEventArgs e)
@@ -141,15 +139,15 @@ namespace FitLog.Pages
 
                     });
                 }
-
+                pulses = pulses.OrderBy(l => l.MeasurementTimePulse).ToList();
                 ExportToExcelPulse(pulses);
             }
             else if (PeriodComboBox.SelectedValue.ToString() == "Неделя")
             {
-                // Начальная дата - 6 дней назад от текущего дня
+                
                 var startDate = DateTime.Now.Date.AddDays(-6);
 
-                // Конечная дата - текущий момент
+                
                 var endDate = DateTime.Now;
 
                 var info = DatabaseContext.DbContext.Context.Pulses.ToList()
@@ -165,7 +163,7 @@ namespace FitLog.Pages
 
                     });
                 }
-
+                pulses = pulses.OrderBy(l => l.MeasurementTimePulse).ToList();
                 ExportToExcelPulse(pulses);
             }
 
@@ -173,29 +171,29 @@ namespace FitLog.Pages
 
         public static void ExportToWordPulse(List<Pulses> pulses)
         {
-            // Создаем новый документ Word
+            
             using (WordDocument document = new WordDocument())
             {
-                // Добавляем раздел с заголовком
+                
                 WSection section = document.AddSection() as WSection;
                 WParagraph paragraph = section.HeadersFooters.Header.AddParagraph() as WParagraph;
                 paragraph.AppendText("Pulse Data").CharacterFormat.FontSize = 14;
                 paragraph.ParagraphFormat.HorizontalAlignment = Syncfusion.DocIO.DLS.HorizontalAlignment.Center;
 
-                // Добавляем таблицу
+                
                 WTable table = section.AddTable() as WTable;
-                table.ResetCells(pulses.Count + 1, 2); // +1 для заголовков
+                table.ResetCells(pulses.Count + 1, 2); 
 
-                // Добавляем заголовки таблицы
-                string[] headers = { "Момент занесения", "Пульс"};
+                
+                string[] headers = { "Момент занесения", "Пульс" };
                 for (int i = 0; i < headers.Length; i++)
                 {
                     table[0, i].AddParagraph().AppendText(headers[i]);
                     table[0, i].CellFormat.VerticalAlignment = Syncfusion.DocIO.DLS.VerticalAlignment.Middle;
-                    //table[0, i].CellFormat.HorizontalAlignment = Syncfusion.DocIO.DLS.HorizontalAlignment.Center;
+                    
                 }
 
-                // Добавляем данные в таблицу
+                
                 for (int i = 0; i < pulses.Count; i++)
                 {
                     Pulses pulse = pulses[i];
@@ -203,7 +201,7 @@ namespace FitLog.Pages
                     table[i + 1, 1].AddParagraph().AppendText(pulse.FrequencyOfContractions.ToString());
                 }
 
-                // Устанавливаем форматирование для таблицы
+                
                 foreach (WTableRow row in table.Rows)
                 {
                     foreach (WTableCell cell in row.Cells)
@@ -215,13 +213,13 @@ namespace FitLog.Pages
                     }
                 }
 
-                // Сохраняем документ
+                
                 string downloadsPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads";
                 string fileName = $"SleepOutput_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.docx";
                 string filePath = System.IO.Path.Combine(downloadsPath, fileName);
                 document.Save(filePath);
 
-                MessageBox.Show($"Файл сохранен в папке \"Загрузки\": {filePath}", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+               CustomMessageBox.Show($"Файл сохранен в папке \"Загрузки\": {filePath}", "Успех", MessageWindowImage.Information, MessageWindowButton.Ok);
             }
         }
 
@@ -242,15 +240,13 @@ namespace FitLog.Pages
 
                     });
                 }
-
+                pulses = pulses.OrderBy(l => l.MeasurementTimePulse).ToList();
                 ExportToWordPulse(pulses);
             }
             else if (PeriodComboBox.SelectedValue.ToString() == "Неделя")
             {
-                // Начальная дата - 6 дней назад от текущего дня
                 var startDate = DateTime.Now.Date.AddDays(-6);
 
-                // Конечная дата - текущий момент
                 var endDate = DateTime.Now;
 
                 var info = DatabaseContext.DbContext.Context.Pulses.ToList()
@@ -266,25 +262,55 @@ namespace FitLog.Pages
 
                     });
                 }
-
+                pulses = pulses.OrderBy(l => l.MeasurementTimePulse).ToList();
                 ExportToWordPulse(pulses);
             }
 
         }
-        
+
+        private void OpenFirstLink(object sender, RoutedEventArgs e)
+        {
+            string url = "https://wer.ru/articles/kakoy-puls-schitaetsya-normalnym-dlya-cheloveka-togo-ili-inogo-vozrasta-svodnaya-tablitsa-znacheniy-/";
+
+            Process.Start(url);
+        }
+
+        private void OpenSecondLink(object sender, RoutedEventArgs e)
+        {
+            string url = "https://dgp6-omsk.ru/ru/kak-privesti-puls-v-normu-bystro";
+
+            Process.Start(url);
+        }
+
 
         public void SavePulse()
         {
+            DateTime today = DateTime.Today;
 
-            if (string.IsNullOrWhiteSpace(PulseTextBox.Text))
+            var newPulseTime = PulseTimePicker.Value;
+
+            int pulseConsumed;
+            if (!int.TryParse(PulseTextBox.Text, out pulseConsumed))
             {
-                MessageBox.Show("Пожалуйста, введите пульс");
+                CustomMessageBox.Show("Некорректное значение для пульса", "Внимание", MessageWindowImage.Warning, MessageWindowButton.Ok);
+                return;
+            }
+
+            if (newPulseTime == default)
+            {
+                CustomMessageBox.Show("Пожалуйста, заполните временной интервал", "Внимание", MessageWindowImage.Warning, MessageWindowButton.Ok);
+                return;
+            }
+
+            if (newPulseTime.Value.Date > today)
+            {
+                CustomMessageBox.Show("Нельзя вводить данные на будущие даты", "Внимание", MessageWindowImage.Warning, MessageWindowButton.Ok);
                 return;
             }
 
             if (Convert.ToInt32(PulseTextBox.Text) > 300 || Convert.ToInt32(PulseTextBox.Text) < 0)
             {
-                MessageBox.Show("Данное значение пульса невозможно у человека");
+                CustomMessageBox.Show("Данное значение пульса невозможно у человека", "Внимание", MessageWindowImage.Warning, MessageWindowButton.Ok);
                 return;
             }
 
@@ -297,7 +323,8 @@ namespace FitLog.Pages
 
             DatabaseContext.DbContext.Context.SaveChanges();
 
-            //ClearField.ClearTextBoxes(this);
+            PulseTimePicker.Text = "";
+            ClearField.ClearTextBoxes(this);
 
         }
 
@@ -310,7 +337,7 @@ namespace FitLog.Pages
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при сохранении данных: {ex.Message}");
+                CustomMessageBox.Show($"Ошибка при сохранении данных: {ex.Message}", "Ошибка", MessageWindowImage.Error, MessageWindowButton.Ok);
             }
         }
     }
