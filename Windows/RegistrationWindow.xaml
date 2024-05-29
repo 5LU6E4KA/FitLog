@@ -99,7 +99,6 @@
                             <Image Height="20" Style="{DynamicResource LoginIcon}" />
                             <TextBlock
                                 x:Name="textEmail"
-                                Background="#F2F1EC"
                                 MouseDown="textEmail_MouseDown"
                                 Style="{StaticResource textHint}"
                                 Text="Логин" />
