@@ -43,7 +43,15 @@ namespace FitLog.Pages
             Period = period;
             ChartUpdateWeight();
             PeriodComboBox.SelectedIndex = 0;
+            WeightTextBox.AddHandler(DataObject.PastingEvent, new DataObjectPastingEventHandler(OnPasting));
+            WeightTimePicker.AddHandler(DataObject.PastingEvent, new DataObjectPastingEventHandler(OnPasting));
             DataContext = this;
+        }
+
+        private void OnPasting(object sender, DataObjectPastingEventArgs e)
+        {
+            // Отменяем вставку любых данных
+            e.CancelCommand();
         }
 
         private void ChartUpdateWeight()

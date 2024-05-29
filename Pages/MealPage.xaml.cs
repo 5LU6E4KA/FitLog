@@ -44,6 +44,9 @@ namespace FitLog.Pages
             PeriodComboBox.SelectedIndex = 0;
             EatingComboBox.SelectedIndex = 0;
             ChartUpdateMeal(DateTime.Now);
+            FoodProductTextBox.AddHandler(DataObject.PastingEvent, new DataObjectPastingEventHandler(OnPasting));
+            CarloriesGainedTextBox.AddHandler(DataObject.PastingEvent, new DataObjectPastingEventHandler(OnPasting));
+            FoodTimeDateTimePicker.AddHandler(DataObject.PastingEvent, new DataObjectPastingEventHandler(OnPasting));
             DataContext = this;
         }
 
@@ -85,6 +88,12 @@ namespace FitLog.Pages
                 calories.Add(new Calorie { Day = item.Value, Calories = calorie.Count() == 0 ? 0 : (double)calorie.Sum(x => x.AmountOfCalories) });
             }
             ColGraficCalroies.ItemsSource = calories;
+        }
+
+        private void OnPasting(object sender, DataObjectPastingEventArgs e)
+        {
+            // Отменяем вставку любых данных
+            e.CancelCommand();
         }
 
         private void ButtonSaveCalories_Click(object sender, RoutedEventArgs e)

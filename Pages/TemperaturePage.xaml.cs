@@ -40,11 +40,18 @@ namespace FitLog.Pages
         {
             InitializeComponent();
             Period = period;
-
             _currentUser = user;
             ChartUpdateTemperature();
             PeriodComboBox.SelectedIndex = 0;
+            TemperatureTextBox.AddHandler(DataObject.PastingEvent, new DataObjectPastingEventHandler(OnPasting));
+            TemperatureTimeDateTimePicker.AddHandler(DataObject.PastingEvent, new DataObjectPastingEventHandler(OnPasting));
             DataContext = this;
+        }
+
+        private void OnPasting(object sender, DataObjectPastingEventArgs e)
+        {
+            // Отменяем вставку любых данных
+            e.CancelCommand();
         }
 
         private void ChartUpdateTemperature()

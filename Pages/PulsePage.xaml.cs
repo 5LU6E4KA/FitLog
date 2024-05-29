@@ -35,6 +35,8 @@ namespace FitLog.Pages
             ChartUpdatePulse();
             Period = period;
             PeriodComboBox.SelectedIndex = 0;
+            PulseTextBox.AddHandler(DataObject.PastingEvent, new DataObjectPastingEventHandler(OnPasting));
+            PulseTimePicker.AddHandler(DataObject.PastingEvent, new DataObjectPastingEventHandler(OnPasting));
             DataContext = this;
         }
 
@@ -60,6 +62,12 @@ namespace FitLog.Pages
             }
 
             LineGraficPulse.ItemsSource = pulses;
+        }
+
+        private void OnPasting(object sender, DataObjectPastingEventArgs e)
+        {
+            // Отменяем вставку любых данных
+            e.CancelCommand();
         }
 
 

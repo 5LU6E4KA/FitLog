@@ -17,6 +17,7 @@ namespace FitLog.Windows
         {
             InitializeComponent();
             _currentUser = user;
+            Application.Current.MainWindow = this;
         }
 
         private void Border_MouseDown(object sender, MouseButtonEventArgs e)

@@ -41,7 +41,15 @@ namespace FitLog.Pages
             Period = period;
             ChartUpdateGlucose();
             PeriodComboBox.SelectedIndex = 0;
+            GlucoseTextBox.AddHandler(DataObject.PastingEvent, new DataObjectPastingEventHandler(OnPasting));
+            GlucoseTimePicker.AddHandler(DataObject.PastingEvent, new DataObjectPastingEventHandler(OnPasting));
             DataContext = this;
+        }
+
+        private void OnPasting(object sender, DataObjectPastingEventArgs e)
+        {
+            // Отменяем вставку любых данных
+            e.CancelCommand();
         }
 
         private void ChartUpdateGlucose()

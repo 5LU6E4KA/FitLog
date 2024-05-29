@@ -41,6 +41,9 @@ namespace FitLog.Pages
             Period = period;
             PeriodComboBox.SelectedIndex = 0;
             ChartUpdateWater(DateTime.Now);
+            WaterLevelTextBox.AddHandler(DataObject.PastingEvent, new DataObjectPastingEventHandler(OnPasting));
+            WaterTypeTextBox.AddHandler(DataObject.PastingEvent, new DataObjectPastingEventHandler(OnPasting));
+            LiquidTimeDateTimePicker.AddHandler(DataObject.PastingEvent, new DataObjectPastingEventHandler(OnPasting));
             DataContext = this;
         }
         private List<string> period = new List<string>
@@ -78,7 +81,11 @@ namespace FitLog.Pages
             ColGraficWater.ItemsSource = waters;
         }
 
-
+        private void OnPasting(object sender, DataObjectPastingEventArgs e)
+        {
+            // Отменяем вставку любых данных
+            e.CancelCommand();
+        }
 
         public void SaveWater()
         {

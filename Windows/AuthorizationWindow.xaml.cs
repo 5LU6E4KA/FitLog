@@ -16,6 +16,7 @@ namespace FitLog.Windows
         public AuthorizationWindow()
         {
             InitializeComponent();
+            Application.Current.MainWindow = this;
         }
 
         private void Border_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)

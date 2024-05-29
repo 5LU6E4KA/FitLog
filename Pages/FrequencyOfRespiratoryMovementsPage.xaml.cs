@@ -42,6 +42,8 @@ namespace FitLog.Pages
             Period = period;
             ChartUpdateFrequencyOfRespiratoryMovements();
             PeriodComboBox.SelectedIndex = 0;
+            FrequencyTextBox.AddHandler(DataObject.PastingEvent, new DataObjectPastingEventHandler(OnPasting));
+            FrequencyTimePicker.AddHandler(DataObject.PastingEvent, new DataObjectPastingEventHandler(OnPasting));
             DataContext = this;
         }
 
@@ -129,6 +131,12 @@ namespace FitLog.Pages
             Regex regex = new Regex("^[0-9]+$");
 
             e.Handled = !regex.IsMatch(e.Text);
+        }
+
+        private void OnPasting(object sender, DataObjectPastingEventArgs e)
+        {
+            // Отменяем вставку любых данных
+            e.CancelCommand();
         }
 
         private void ButtonExportToExcelFrequencyOfRespiratoryMovements_Click(object sender, RoutedEventArgs e)

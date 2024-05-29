@@ -176,7 +176,7 @@
                                 Height="20"
                                 Margin="25,0,0,0"
                                 Style="{DynamicResource OutIcon}" />
-                           
+
                             <TextBlock Style="{StaticResource menuButtonText}" Text="Выход" />
                         </StackPanel>
                     </Button>

@@ -63,8 +63,19 @@ namespace FitLog.Pages
             LoadUserWeightGoals();
             LoadUserFrequencyGoals();
 
+            FoodGoalTextBox.AddHandler(DataObject.PastingEvent, new DataObjectPastingEventHandler(OnPasting));
+            FrequencyGoalTextBox.AddHandler(DataObject.PastingEvent, new DataObjectPastingEventHandler(OnPasting));
+            LiquidGoalTextBox.AddHandler(DataObject.PastingEvent, new DataObjectPastingEventHandler(OnPasting));
+            WeightGoalTextBox.AddHandler(DataObject.PastingEvent, new DataObjectPastingEventHandler(OnPasting));
+
             DataContext = this;
 
+        }
+
+        private void OnPasting(object sender, DataObjectPastingEventArgs e)
+        {
+            // Отменяем вставку любых данных
+            e.CancelCommand();
         }
 
         private void LoadUserFoodGoals()
