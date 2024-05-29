@@ -12,8 +12,8 @@
     WindowStartupLocation="CenterScreen"
     WindowStyle="None"
     mc:Ignorable="d">
-    
-    
+
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -21,7 +21,7 @@
         </Grid.ColumnDefinitions>
 
 
-        <Viewbox></Viewbox>
+        <Viewbox />
         <Border CornerRadius="10 0 0 10">
             <Border.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -110,6 +110,7 @@
                             <TextBox
                                 Name="txtEmail"
                                 Background="#F2F1EC"
+                                MaxLength="40"
                                 Style="{StaticResource textBox}"
                                 TextChanged="txtEmail_TextChanged" />
                         </Grid>

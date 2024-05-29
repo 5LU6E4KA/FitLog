@@ -106,6 +106,7 @@
                             <TextBox
                                 Name="txtEmail"
                                 Background="#F2F1EC"
+                                MaxLength="40"
                                 Style="{StaticResource textBox}"
                                 TextChanged="txtEmail_TextChanged" />
                         </Grid>
