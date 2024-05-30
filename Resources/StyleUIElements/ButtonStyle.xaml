@@ -32,6 +32,31 @@
         </Style.Triggers>
     </Style>
 
+    <Style x:Key="menuButton" TargetType="Button">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="#000" />
+        <Setter Property="Height" Value="45" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Margin" Value="15,0,15,5" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}" CornerRadius="10">
+                        <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#EAE6D2" />
+                <Setter Property="Foreground" Value="#000" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+
 
 
     <Style x:Key="RoundedButtonStyle" TargetType="Button">

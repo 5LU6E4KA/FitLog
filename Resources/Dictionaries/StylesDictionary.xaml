@@ -6,6 +6,10 @@
         <ResourceDictionary Source="/Resources/StyleUIElements/ButtonStyle.xaml" />
         <ResourceDictionary Source="/Resources/StyleUIElements/WindowStyle.xaml" />
         <ResourceDictionary Source="/Resources/StyleUIElements/Dictionary1.xaml" />
+        <ResourceDictionary Source="/Resources/StyleUIElements/ListBox.xaml" />
+        <ResourceDictionary Source="/Resources/StyleUIElements/ToolTip.xaml" />
+        <ResourceDictionary Source="/Resources/StyleUIElements/ComboBox.xaml" />
+        <ResourceDictionary Source="/Resources/StyleUIElements/Border.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>
