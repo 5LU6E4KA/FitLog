@@ -406,7 +406,7 @@ namespace FitLog.Pages
             FileInfo fileInfo = new FileInfo(filePath);
             if (fileInfo.Length > MaxFileSize)
             {
-                CustomMessageBox.Show($"Файл {fileInfo.Name} превышает максимальный размер 3 МБ!", "Ошибка", MessageWindowImage.Error, MessageWindowButton.Ok);
+                CustomMessageBox.Show($"Файл {fileInfo.Name} превышает максимальный размер 7 МБ!", "Ошибка", MessageWindowImage.Error, MessageWindowButton.Ok);
                 return;
             }
 
